@@ -1,4 +1,5 @@
-import { LicenseTerms, LicensingConfig, WIP_TOKEN_ADDRESS } from '@story-protocol/core-sdk'
+// @ts-ignore
+import {LicenseTerms, LicensingConfig, WIP_TOKEN_ADDRESS } from '@story-protocol/core-sdk'
 import { Address, parseEther, zeroAddress } from 'viem'
 import dotenv from 'dotenv'
 import { networkInfo } from './config'
@@ -7,10 +8,10 @@ dotenv.config()
 
 // Export contract addresses with appropriate defaults based on network
 export const NFTContractAddress: Address =
-    (process.env.NFT_CONTRACT_ADDRESS as Address) || networkInfo.defaultNFTContractAddress || zeroAddress
+    (process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS as Address) || networkInfo.defaultNFTContractAddress || zeroAddress
 
 export const SPGNFTContractAddress: Address =
-    (process.env.SPG_NFT_CONTRACT_ADDRESS as Address) || networkInfo.defaultSPGNFTContractAddress || zeroAddress
+    (process.env.NEXT_PUBLIC_SPG_NFT_CONTRACT_ADDRESS as Address) || networkInfo.defaultSPGNFTContractAddress || zeroAddress
 
 // This is a pre-configured PIL Flavor:
 // https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%231%3A-non-commercial-social-remixing

@@ -17,6 +17,9 @@ export async function mintNFT(to: Address, uri: string): Promise<number | undefi
         hash,
     })
     if (logs[0].topics[3]) {
+        console.log('NFT minted successfully!')
+        console.log('Transaction hash:', hash)
+        console.log('NFT ID:', parseInt(logs[0].topics[3], 16))
         return parseInt(logs[0].topics[3], 16)
     }
 }

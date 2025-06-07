@@ -1,7 +1,7 @@
 import { zeroAddress } from 'viem'
 import { client } from '../config'
 
-const main = async function () {
+export const createSpgNftCollection = async function () {
     // Create a new SPG NFT collection
     //
     // NOTE: Use this code to create a new SPG NFT collection. You can then use the
@@ -26,6 +26,6 @@ const main = async function () {
         'SPG NFT Contract Address': newCollection.spgNftContract,
         'Transaction Hash': newCollection.txHash,
     })
-}
 
-main()
+    return newCollection.spgNftContract
+}

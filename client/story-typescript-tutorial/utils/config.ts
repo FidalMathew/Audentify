@@ -1,3 +1,4 @@
+// @ts-ignore
 import { aeneid, mainnet, StoryClient, StoryConfig } from '@story-protocol/core-sdk'
 import { Chain, createPublicClient, createWalletClient, http, WalletClient } from 'viem'
 import { privateKeyToAccount, Address, Account } from 'viem/accounts'
@@ -39,13 +40,13 @@ const networkConfigs: Record<NetworkType, NetworkConfig> = {
 
 // Helper functions
 const validateEnvironmentVars = () => {
-    if (!process.env.WALLET_PRIVATE_KEY) {
+    if (!process.env.NEXT_PUBLIC_WALLET_PRIVATE_KEY) {
         throw new Error('WALLET_PRIVATE_KEY is required in .env file')
     }
 }
 
 const getNetwork = (): NetworkType => {
-    const network = process.env.STORY_NETWORK as NetworkType
+    const network = 'aeneid' as NetworkType
     if (network && !(network in networkConfigs)) {
         throw new Error(`Invalid network: ${network}. Must be one of: ${Object.keys(networkConfigs).join(', ')}`)
     }
@@ -61,7 +62,7 @@ export const networkInfo = {
     rpcProviderUrl: process.env.RPC_PROVIDER_URL || networkConfigs[network].rpcProviderUrl,
 }
 
-export const account: Account = privateKeyToAccount(`0x${process.env.WALLET_PRIVATE_KEY}` as Address)
+export const account: Account = privateKeyToAccount(`0x${process.env.NEXT_PUBLIC_WALLET_PRIVATE_KEY}` as Address)
 
 const config: StoryConfig = {
     account,
