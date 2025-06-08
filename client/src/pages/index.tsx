@@ -4,8 +4,14 @@ import { uploadFileToIPFS } from "../../story-typescript-tutorial/utils/function
 import { createSpgNftCollection } from "../../story-typescript-tutorial/utils/functions/createSpgNftCollection";
 import { mintNFT } from "../../story-typescript-tutorial/utils/functions/mintNFT";
 import { useWalletContext } from "@/contexts/useWalletContext";
-import { Hex } from "viem";
+import { Hex, Address } from "viem";
 import { registerIP } from "../../story-typescript-tutorial/scripts/registration/register";
+import { registerIPandMakeDerivative } from "../../story-typescript-tutorial/scripts/derivative/registerDerivativeCommercial";
+import axios from "axios";
+import {
+  createIpMetadata,
+  IpMetadataResponse,
+} from "../../story-typescript-tutorial/utils/createIpMetadata";
 
 export default function Home() {
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -22,22 +28,23 @@ export default function Home() {
     setStatus("Uploading to IPFS...");
     const res = await uploadFileToIPFS(file);
     setStatus("Uploaded to IPFS!");
-    return res; // Return the IPFS URL
+    const uri = `https://ipfs.io/ipfs/${res}`;
+    return uri; // Return the IPFS URL
   };
 
-  // Mock function 2
-  const mintNFTfunc = async (ipfsHash: string) => {
-    setStatus("Processing video...");
-    const uri = `https://ipfs.io/ipfs/${ipfsHash}`;
-    // await mintNFT(ipfsHash);
-    const tokenId = await mintNFT(walletAddress! as Hex, uri);
-    setVideoUrl(`https://ipfs.io/ipfs/${ipfsHash}`);
-    setStatus("NFT minted successfully!");
-    return uri;
-  };
+  // // Mock function 2
+  // const mintNFTfunc = async (ipfsHash: string) => {
+  //   setStatus("Processing video...");
+  //   const uri = `https://ipfs.io/ipfs/${ipfsHash}`;
+  //   // await mintNFT(ipfsHash);
+  //   const tokenId = await mintNFT(walletAddress! as Hex, uri);
+  //   setVideoUrl(`https://ipfs.io/ipfs/${ipfsHash}`);
+  //   setStatus("NFT minted successfully!");
+  //   return uri;
+  // };
 
   // Mock function 3
-  const registerAsAnIP = async (videoUri: string) => {
+  const mintAndRegisterIP = async (videoUri: string) => {
     if (!videoUri) return;
     setStatus("Finalizing upload...");
     const storyUrl = await registerIP(
@@ -57,18 +64,63 @@ export default function Home() {
       "video", // mediaType (added argument)
       "video/mp4"
     );
-    setStatus(`IP Registerd with ${storyUrl}!`);
+    setStatus(`NFT Minted and IP Registerd with ${storyUrl}`);
   };
 
-  // const mintNFTCollection = async () => {
-  //   try {
-  //     const collectionAddress = await createSpgNftCollection();
-  //     setCollectionAddress(collectionAddress);
-  //   } catch (error) {
-  //     console.error("Error minting NFT collection:", error);
-  //     setStatus("Failed to mint NFT collection.");
-  //   }
-  // };
+  const registerIPandMakeDerivativeFunc = async (parentIpId: Address) => {
+    if (!parentIpId) {
+      setStatus("Parent IP ID is required.");
+      return;
+    }
+
+    if (!process.env.NEXT_PUBLIC_STORY_API_KEY) {
+      setStatus("API key is not set.");
+      return;
+    }
+    const {
+      data: { data: parentLicenseTermId },
+    } = await axios.get(
+      `https://api.storyapis.com/api/v3/licenses/ip/terms/${parentIpId}`,
+      {
+        headers: {
+          "X-Api-Key": process.env.NEXT_PUBLIC_STORY_API_KEY,
+          "X-Chain": "story-aeneid",
+        },
+      }
+    );
+
+    const ipmetadata: IpMetadataResponse = await createIpMetadata(
+      "My Video IP",
+      "This is a video IP asset.",
+      new Date().toISOString(),
+      [
+        {
+          name: "Creator Name",
+          address: walletAddress!,
+          contributionPercent: 100,
+        },
+      ],
+
+      "https://ipfs.io/ipfs/bafkreicqtmtckbnyxdgrsmzzl7px6tltnyrg7py3yr57ncjsow5pcaifsa", // Provide actual image URL if available
+      "bafkreicqtmtckbnyxdgrsmzzl7px6tltnyrg7py3yr57ncjsow5pcaifsa", // Provide actual image hash if available
+      videoUrl || "", // Use the video URL
+      "", // Provide actual media hash if available
+      "image/jpeg" // Specify the media type
+    );
+
+    setStatus(`Registering derivative of ${parentIpId}`);
+
+    console.log("Parent License Term ID:", parentLicenseTermId);
+
+    const derivativeUrl = await registerIPandMakeDerivative(
+      parentIpId,
+      parentLicenseTermId[0].licenseTermsId,
+      ipmetadata
+    );
+
+    setStatus(`Derivative Registered: ${derivativeUrl}`);
+    console.log("Derivative URL:", derivativeUrl);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -97,9 +149,8 @@ export default function Home() {
         return;
       }
       // Sequential execution
-      const ipfsUrl = await uploadToIPFS(videoFile);
-      const processedData = await mintNFTfunc(ipfsUrl);
-      await registerAsAnIP(processedData!);
+      const ipfsUri = await uploadToIPFS(videoFile);
+      await mintAndRegisterIP(ipfsUri);
     };
   };
 
@@ -129,9 +180,15 @@ export default function Home() {
       </Button>
       {status && <div className="mt-2 text-sm text-gray-700">{status}</div>}
 
-      {/* <Button onClick={mintNFTCollection} className="mt-2">
-        Mint NFT Collection
-      </Button> */}
+      <Button
+        onClick={() =>
+          registerIPandMakeDerivativeFunc(
+            "0xd6D3AC2058bE199a9Db411fd300E065cc3D18e85"
+          )
+        }
+      >
+        Register Derivative
+      </Button>
     </div>
   );
 }

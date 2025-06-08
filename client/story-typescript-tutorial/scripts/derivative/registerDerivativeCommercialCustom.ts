@@ -2,6 +2,7 @@ import { Address, toHex } from 'viem'
 import { mintNFT } from '../../utils/functions/mintNFT'
 import { NFTContractAddress, RoyaltyPolicyLRP } from '../../utils/utils'
 import { account, client } from '../../utils/config'
+// @ts-ignore
 import { WIP_TOKEN_ADDRESS } from '@story-protocol/core-sdk'
 
 // TODO: This is Ippy on Aeneid. The license terms specify 1 $WIP mint fee

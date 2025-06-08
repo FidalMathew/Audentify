@@ -5,14 +5,24 @@ import { createHash } from 'crypto'
 //@ts-ignore
 import { IpMetadata } from '@story-protocol/core-sdk'
 
-export const registerIP = async function (title : string, description : string, createdAt : string, creators : { name: string, address: string, contributionPercent: number }[], image : string, imageHash : string, mediaUrl : string, mediaHash : string, mediaType : string) {
+export const registerIP = async function (
+    title: string,
+    description: string,
+    createdAt: string,
+    creators: { name: string; address: string; contributionPercent: number }[],
+    image: string,
+    imageHash: string,
+    mediaUrl: string,
+    mediaHash: string,
+    mediaType: string
+) {
     // 1. Set up your IP Metadata
     //
     // Docs: https://docs.story.foundation/concepts/ip-asset/ipa-metadata-standard
     const ipMetadata: IpMetadata = client.ipAsset.generateIpMetadata({
         title: title,
         description: description,
-        createdAt: createdAt,           
+        createdAt: createdAt,
 
         creators: creators,
         image: image,
@@ -40,8 +50,6 @@ export const registerIP = async function (title : string, description : string, 
     //     mediaType: 'audio/mpeg',
     // }
 
-
-
     // 2. Set up your NFT Metadata
     //
     // Docs: https://docs.opensea.io/docs/metadata-standards#metadata-structure
@@ -66,13 +74,12 @@ export const registerIP = async function (title : string, description : string, 
     //     ],
     // }
 
-
     const nftMetadata = {
         name: title,
         description: description,
         image: image,
         animation_url: mediaUrl,
-        attributes: creators.map(creator => ({
+        attributes: creators.map((creator) => ({
             key: creator.name,
             value: creator.address,
         })),

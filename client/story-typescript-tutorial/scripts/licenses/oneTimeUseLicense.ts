@@ -1,6 +1,7 @@
 import { SPGNFTContractAddress, createCommercialRemixTerms } from '../../utils/utils'
 import { client, account, publicClient, walletClient } from '../../utils/config'
 import { toHex } from 'viem'
+// @ts-ignore
 import { LicensingConfig } from '@story-protocol/core-sdk'
 import { zeroAddress } from 'viem'
 import { totalLicenseTokenLimitHook } from '../../utils/abi/totalLicenseTokenLimitHook'
