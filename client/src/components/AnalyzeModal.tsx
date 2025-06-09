@@ -120,7 +120,7 @@ export function AnalysisModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-white">
         <DialogHeader className="flex flex-col items-center text-center">
           <div className="mb-4">{getIcon()}</div>
           <DialogTitle className="text-2xl font-bold">{getTitle()}</DialogTitle>

@@ -26,8 +26,8 @@ export default function ReelDetailPage() {
   return (
     <section className="py-8" style={{ height: "calc(100vh - 64px)" }}>
       <div className="px-7 flex h-full gap-7">
-        <div className="h-full rounded-lg w-[60%]">
-          <div className="aspect-[9/16] w-full h-full flex justify-center">
+        <div className="h-full rounded-lg w-[60%] flex justify-center">
+          <div className="aspect-[16/9] h-full flex border-2 rounded-lg">
             <video src={reel.videoUrl} controls className="object-contain">
               Your browser does not support the video tag.
             </video>
