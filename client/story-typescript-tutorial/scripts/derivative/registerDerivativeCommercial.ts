@@ -49,14 +49,14 @@ export const registerIPandMakeDerivative = async function (
     // 2. Parent Claim Revenue
     //
     // Docs: https://docs.story.foundation/sdk-reference/royalty#claimallrevenue
-    const parentClaimRevenue = await client.royalty.claimAllRevenue({
-        ancestorIpId: PARENT_IP_ID,
-        claimer: PARENT_IP_ID,
-        childIpIds: [childIp.ipId as Address],
-        royaltyPolicies: [RoyaltyPolicyLRP],
-        currencyTokens: [WIP_TOKEN_ADDRESS],
-    })
-    console.log('Parent claimed revenue receipt:', parentClaimRevenue)
+    // const parentClaimRevenue = await client.royalty.claimAllRevenue({
+    //     ancestorIpId: PARENT_IP_ID,
+    //     claimer: PARENT_IP_ID,
+    //     childIpIds: [childIp.ipId as Address],
+    //     royaltyPolicies: [RoyaltyPolicyLRP],
+    //     currencyTokens: [WIP_TOKEN_ADDRESS],
+    // })
+    // console.log('Parent claimed revenue receipt:', parentClaimRevenue)
 
     return `https://aeneid.storyscan.xyz/ip/${childIp.ipId}`
 }

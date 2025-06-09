@@ -112,14 +112,14 @@ export default function Home() {
 
     console.log("Parent License Term ID:", parentLicenseTermId);
 
-    const derivativeUrl = await registerIPandMakeDerivative(
-      parentIpId,
-      parentLicenseTermId[0].licenseTermsId,
-      ipmetadata
-    );
+    // const derivativeUrl = await registerIPandMakeDerivative(
+    //   parentIpId,
+    //   parentLicenseTermId[0].licenseTermsId,
+    //   ipmetadata
+    // );
 
-    setStatus(`Derivative Registered: ${derivativeUrl}`);
-    console.log("Derivative URL:", derivativeUrl);
+    // setStatus(`Derivative Registered: ${derivativeUrl}`);
+    // console.log("Derivative URL:", derivativeUrl);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
