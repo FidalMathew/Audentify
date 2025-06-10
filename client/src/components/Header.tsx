@@ -6,7 +6,10 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-white">
       <div className="flex h-16 items-center justify-between px-8">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+        <Link
+          href="/home"
+          className="flex items-center gap-2 font-bold text-lg"
+        >
           <AudioWaveformIcon className="h-6 w-6" />
           Audentify
         </Link>
