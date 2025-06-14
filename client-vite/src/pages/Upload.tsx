@@ -284,8 +284,12 @@ export default function Upload1() {
       setFindSimilarityMessage("Analyzing audio for similarity...");
       setFindSimilarityStatus("loading");
       // integrate
+
+      // cout<<
       const result = await axios.post("http://localhost:8000/identify", {
-        videoLink: "https://ipfs.io/ipfs/" + hash,
+        videoLink: "https://coral-light-cicada-276.mypinata.cloud/ipfs/" + hash,
+        // videoLink:
+        //   "https://coral-light-cicada-276.mypinata.cloud/ipfs/bafybeifixgtek4ooz2qqoam2iitstg3wedsomphuilneh2f7v5wf6xvofq",
       });
 
       console.log("Audio analysis result:", result.data);
