@@ -7,6 +7,7 @@ const ffmpeg = require("fluent-ffmpeg");
 const FormData = require("form-data");
 const fs = require("fs");
 const path = require("path");
+const cors = require("cors");
 
 const { existsSync, mkdirSync, readdirSync, rmSync } = fs;
 
@@ -17,6 +18,7 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
+app.use(cors())
 
 const ACR_OPTIONS = {
   host: process.env.ACR_HOST,

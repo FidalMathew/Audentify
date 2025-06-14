@@ -284,8 +284,8 @@ export default function Upload1() {
       setFindSimilarityMessage("Analyzing audio for similarity...");
       setFindSimilarityStatus("loading");
       // integrate
-      const result = await axios.post("http://localhost:8000", {
-        videoUrl: "https://ipfs.io/ipfs/" + hash,
+      const result = await axios.post("http://localhost:8000/identify", {
+        videoLink: "https://ipfs.io/ipfs/" + hash,
       });
 
       console.log("Audio analysis result:", result.data);
