@@ -1,15 +1,15 @@
-import type React from "react";
-import { useState, useRef, type SetStateAction } from "react";
+import { uploadFileToIPFS } from "@/../story-typescript-tutorial/utils/functions/uploadToIpfs";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, XCircle, Loader2, Upload } from "lucide-react";
 import type { AudioInfo } from "@/data/mock-data";
-import { Link } from "react-router-dom";
-import { Formik, Field, Form, type FormikProps } from "formik";
-import { uploadFileToIPFS } from "@/../story-typescript-tutorial/utils/functions/uploadToIpfs";
 import axios from "axios";
+import { Field, Form, Formik, type FormikProps } from "formik";
+import { CheckCircle, Loader2, Upload, XCircle } from "lucide-react";
+import type React from "react";
+import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
 type CheckpointStatus = "idle" | "loading" | "success" | "error";
 
@@ -231,10 +231,18 @@ export default function Upload1() {
     resetUploadState();
 
     setIsAnalyzing(true);
-
-    await handleIPFSUpload(formikRef.current.values.reelVideo!);
-
-    await analyzeAudio();
+    try {
+      const hash = await handleIPFSUpload(formikRef.current.values.reelVideo!);
+      if (!hash) {
+        setIsAnalyzing(false);
+        return;
+      }
+      setUploadToIpfsStatus("success");
+      await analyzeAudio(hash);
+    } catch (error) {
+      console.error("Error during analysis:", error);
+      setExtractAudioStatus("error");
+    }
 
     setIsAnalyzing(false);
   };
@@ -271,17 +279,21 @@ export default function Upload1() {
     }
   };
 
-  const analyzeAudio = async () => {
+  const analyzeAudio = async (hash: string) => {
     try {
       setFindSimilarityMessage("Analyzing audio for similarity...");
       setFindSimilarityStatus("loading");
       // integrate
-      // const result = await axios.post("http://localhost:3000");
-      await new Promise((resolve) =>
-        setTimeout(() => {
-          resolve(true);
-        }, 3000)
-      );
+      const result = await axios.post("http://localhost:8000", {
+        videoUrl: "https://ipfs.io/ipfs/" + hash,
+      });
+
+      console.log("Audio analysis result:", result.data);
+      // await new Promise((resolve) =>
+      //   setTimeout(() => {
+      //     resolve(true);
+      //   }, 3000)
+      // );
 
       let currentProgress = 0;
       const interval = setInterval(() => {
@@ -451,6 +463,16 @@ export default function Upload1() {
                       )}
 
                       <Button type="submit">Submit</Button>
+                      <Button
+                        type="button"
+                        onClick={() =>
+                          analyzeAudio(
+                            "bafybeifixgtek4ooz2qqoam2iitstg3wedsomphuilneh2f7v5wf6xvofq"
+                          )
+                        }
+                      >
+                        audio analysic
+                      </Button>
                       <Button
                         onClick={async () => {
                           if (formik.values.reelVideo) {
