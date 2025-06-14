@@ -518,9 +518,32 @@ export default function Upload1() {
                             <p className="text-green-600 font-semibold text-sm">
                               Upload Complete!
                             </p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Reel uploaded to blockchain successfully.
-                            </p>
+                            {true && true ? (
+                              true && (
+                                <div className="space-y-1">
+                                  <p className="text-yellow-600 font-semibold text-sm">
+                                    Audio is Derivative
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Similar to:{" "}
+                                    {true &&
+                                    "finalAudioResult.similarToReelTitle" ? (
+                                      <Link
+                                        to={`/reels/${"finalAudioResult.similarToReelId"}`}
+                                        className="text-blue-600 hover:underline"
+                                      >
+                                        {"finalAudioResult.similarToReelTitle"}
+                                      </Link>
+                                    ) : (
+                                      "N/A"
+                                    )}
+                                  </p>
+                                </div>
+                              )
+                            ) : (
+                              <p></p>
+                            )}
+
                             <Button
                               onClick={() => {}}
                               className="w-full mt-2"
