@@ -8,7 +8,7 @@ import { useState } from "react";
 
 function Connect() {
   const { setWallet } = useGlobalContext();
-  const { openConnectModal } = useConnectModal();
+  const { openConnectModal, connectModalOpen } = useConnectModal();
   // const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
 
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
@@ -17,12 +17,12 @@ function Connect() {
     console.log("Performing action...");
     const chains = [
       {
-        id: "0x1", // Replace with your chain ID
-        name: "Ethereum Mainnet", // Replace with your chain name
-        rpcUrls: ["https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID"], // Replace with your RPC URL
+        id: "0x523", // Replace with your chain ID
+        name: "Story Aeneid", // Replace with your chain name
+        rpcUrls: ["https://lightnode-json-rpc-story.grandvalleys.com"], // Replace with your RPC URL
         nativeCurrency: {
-          name: "Ether",
-          symbol: "ETH",
+          name: "IP",
+          symbol: "IP",
           decimals: 18,
         },
       },
@@ -34,7 +34,7 @@ function Connect() {
 
     const onboard = await Onboard({
       wallets: [],
-      chains: [storyAeneid],
+      chains: chains,
       appMetadata,
       theme: "default",
       clientId:
@@ -51,18 +51,19 @@ function Connect() {
     console.log("setWallet called", setWallet);
     console.log("Wallet connected:", currentWallet);
     setWallet(currentWallet);
-    // setWalletAddress(currentWallet.accounts[0]);
+    setWalletAddress(currentWallet.accounts[0]);
     // console.log("Provider:", provider);
   };
 
   return (
     <>
       <Button onClick={() => openConnectModal?.()}>Connect Wallet</Button>
-      {walletAddress && (
+      {/* {walletAddress && (
         <div>
-          <p>Connected Wallet Address: {walletAddress}</p>
+          {connectModalOpen && "true"}
+          <p>Connected Wallet Address: {JSON.stringify(walletAddress)}</p>
         </div>
-      )}
+      )} */}
       <Button onClick={() => performAction()}>Perform Action</Button>
     </>
   );

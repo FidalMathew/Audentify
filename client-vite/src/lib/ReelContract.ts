@@ -14,12 +14,12 @@
 //   }
 
 //   async uploadReel(
-//     ipfsHash: string,
-//     title: string,
-//     isDerivative: boolean,
-//     songNames: string[],
-//     songImages: string[],
-//     songLinks: string[]
+// ipfsHash: string,
+// title: string,
+// isDerivative: boolean,
+// songNames: string[],
+// songImages: string[],
+// songLinks: string[]
 //   ) {
 //     const tx = await this.contract.uploadReel(
 //       ipfsHash,

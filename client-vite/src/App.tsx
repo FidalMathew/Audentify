@@ -7,6 +7,7 @@ import Connect from "./pages/Connect.tsx";
 import UserProfilePage from "./pages/profile/Profile";
 import ReelDetailPage from "./pages/reels/ReedPage";
 import Upload1 from "./pages/Upload.tsx";
+import { useGlobalContext } from "./Context/useGlobalContext.tsx";
 
 function App() {
   return (
