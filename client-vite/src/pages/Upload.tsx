@@ -10,7 +10,10 @@ import type React from "react";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { mockAudioResult as MockAudioResultType } from "@/data/mockResult";
-import { mintAndRegisterIP } from "@/lib/utils";
+import {
+  mintAndRegisterIP,
+  registerIPandMakeDerivativeFunc,
+} from "@/lib/utils";
 
 type CheckpointStatus = "idle" | "loading" | "success" | "error";
 
@@ -385,11 +388,19 @@ export default function Upload1() {
 
       let currentProgress = 0;
       setIsDoneWithRegisteringIPasDerivativeProgress(currentProgress);
-      // await new Promise((resolve) => {
-      //   setTimeout(() => {
-      //     resolve(true);
-      //   }, 3000);
-      // });
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true);
+        }, 3000);
+      });
+      // Fill the parameters for registerIPandMakeDerivativeFunc
+      // Example: await registerIPandMakeDerivativeFunc(title, artist, trackId, ...);
+      // await registerIPandMakeDerivativeFunc(
+      //   "0xd2FBBD463E8926C59eA075275259B48F3Fb1639b",
+      //   audioResult?.[0]?.artistName || "",
+      //   "0x3f93B8DCAf29D8B3202347018E23F76e697D8539"
+      //   // Add any other required parameters here
+      // );
 
       const interval = setInterval(() => {
         currentProgress += 10;
@@ -419,7 +430,7 @@ export default function Upload1() {
   const handleIPRegistrations = async () => {
     try {
       setIsRegistering(true);
-      await setAsIP();
+      await setAsIPandDerivative();
       await uploadToBlockchain();
       setIsRegistering(false);
     } catch (error) {
@@ -436,20 +447,20 @@ export default function Upload1() {
       // Simulate blockchain upload
       // You need to provide actual values for these arguments
       // Example values are used below; replace them with real data as needed
-      await smartContract.uploadReel(
-        "bafybeifixgtek4ooz2qqoam2iitstg3wedsomphuilneh2f7v5wf6xvofq", // Replace with actual IPFS hash
-        formikRef.current?.values.reelTitle || "Untitled", // Reel title
-        false, // isDerivative (set to true if derivative)
-        [], // songNames (array of song names)
-        [], // songImages (array of song image URLs)
-        [] // songLinks (array of song links)
-      );
+      // await smartContract.uploadReel(
+      //   "bafybeifixgtek4ooz2qqoam2iitstg3wedsomphuilneh2f7v5wf6xvofq", // Replace with actual IPFS hash
+      //   formikRef.current?.values.reelTitle || "Untitled", // Reel title
+      //   false, // isDerivative (set to true if derivative)
+      //   [], // songNames (array of song names)
+      //   [], // songImages (array of song image URLs)
+      //   [] // songLinks (array of song links)
+      // );
 
-      // await new Promise((resolve) => {
-      //   setTimeout(() => {
-      //     resolve(true);
-      //   }, 2000);
-      // });
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true);
+        }, 2000);
+      });
 
       const interval = setInterval(() => {
         currentProgress += 20;
@@ -726,8 +737,8 @@ export default function Upload1() {
                             )} */}
 
                             {audioResult &&
-                              audioResult.map((audio) => (
-                                <div className="space-y-3 py-2">
+                              audioResult.map((audio, index) => (
+                                <div className="space-y-3 py-2" key={index}>
                                   {audio.score && audio.score > 70 ? (
                                     <p className="text-yellow-600 font-semibold text-sm">
                                       Audio is Derivative
@@ -768,8 +779,9 @@ export default function Upload1() {
                               onClick={() => handleIPRegistrations()}
                               className="w-full mt-2"
                               size="sm"
+                              type="button"
                             >
-                              Set this as IP
+                              Set this as IP Derivative
                             </Button>
                           </div>
                         )}
@@ -806,17 +818,17 @@ export default function Upload1() {
                             message={isDoneWithRegisteringIPMessage}
                             progress={isDoneWithRegisteringIPProgress}
                           />
-                          {/* {registerIpStatus === "success" && (
+                          {isDoneWithRegisteringIPStatus === "success" && (
                             <Checkpoint
-                              title="3. Finishing"
-                              status={finishingStatus}
-                              message={finishingMessage}
-                              progress={finishingProgress}
+                              title="2. Upload to Blockchain"
+                              status={blockchainUploadStatus}
+                              message={blockchainUploadMessage}
+                              progress={blockchainUploadProgress}
                             />
-                          )} */}
+                          )}
                         </div>
 
-                        {isRegistrationComplete && (
+                        {/* {isRegistrationComplete && (
                           <div>
                             <Checkpoint
                               title="2. Uploading to Blockchain"
@@ -836,7 +848,53 @@ export default function Upload1() {
                               Upload Another
                             </Button>
                           </div>
+                        )} */}
+
+                        {isRegistrationError && (
+                          <div className="mt-4 pt-3 border-t text-center">
+                            <p className="text-red-600 font-semibold text-sm">
+                              Registration failed
+                            </p>
+
+                            <Button
+                              onClick={() => {
+                                setIsUploading(false);
+                                resetUploadState();
+                              }}
+                              className="w-full mt-2"
+                              size="sm"
+                            >
+                              Reset
+                            </Button>
+                          </div>
                         )}
+                      </div>
+                    )}
+
+                    {isDoneWithRegisteringIPasDerivativeStatus !== "idle" && (
+                      <div className="space-y-4 border p-3 rounded-lg bg-card text-card-foreground shadow-sm mt-5">
+                        <h3 className="text-lg font-semibold">
+                          Register as an IP
+                        </h3>
+                        <div className="space-y-3 mb-2">
+                          <Checkpoint
+                            title="1. Register as an IP"
+                            status={isDoneWithRegisteringIPasDerivativeStatus}
+                            message={isDoneWithRegisteringIPasDerivativeMessage}
+                            progress={
+                              isDoneWithRegisteringIPasDerivativeProgress
+                            }
+                          />
+                          {isDoneWithRegisteringIPasDerivativeStatus ===
+                            "success" && (
+                            <Checkpoint
+                              title="2. Upload to Blockchain"
+                              status={blockchainUploadStatus}
+                              message={blockchainUploadMessage}
+                              progress={blockchainUploadProgress}
+                            />
+                          )}
+                        </div>
 
                         {isRegistrationError && (
                           <div className="mt-4 pt-3 border-t text-center">

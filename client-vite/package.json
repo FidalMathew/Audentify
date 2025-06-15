@@ -29,7 +29,6 @@
     "lucide-react": "^0.514.0",
     "multiformats": "^13.3.7",
     "path": "^0.12.7",
-    "pinata": "2.4.8",
     "process": "^0.11.10",
     "react": "^18",
     "react-dom": "^18",

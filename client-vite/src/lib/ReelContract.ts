@@ -1,44 +1,16 @@
-import {
-  createWalletClient,
-  createPublicClient,
-  http,
-  parseEther,
-  type Hex,
-  type ReadContractReturnType,
-} from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import { abi as contractAbi } from "@/data/abi"; // Import your ABI here
-import { storyAeneid } from "viem/chains"; // Change to polygonMumbai, sepolia, etc.
+import { ethers } from "ethers";
+import { abi as contractAbi } from "@/data/abi"; // Your contract ABI
 
 export class ReelContract {
-  private walletClient;
-  private publicClient;
-  private contractAddress: Hex;
-  private account;
+  private contract!: ethers.Contract;
 
-  constructor(contractAddress: string, privateKey: Hex) {
-    this.contractAddress = contractAddress as Hex;
-    this.account = privateKeyToAccount(privateKey);
-
-    this.walletClient = createWalletClient({
-      account: this.account,
-      chain: storyAeneid, // Change as needed
-      transport: http(),
-    });
-
-    this.publicClient = createPublicClient({
-      chain: storyAeneid,
-      transport: http(),
-    });
+  constructor(contractAddress: string, signer: ethers.JsonRpcSigner) {
+    this.contract = new ethers.Contract(contractAddress, contractAbi, signer);
   }
 
   async setUserProfile(username: string, profileImage: string) {
-    return this.walletClient.writeContract({
-      address: this.contractAddress,
-      abi: contractAbi,
-      functionName: "setUserProfile",
-      args: [username, profileImage],
-    });
+    const tx = await this.contract.setUserProfile(username, profileImage);
+    return tx.wait();
   }
 
   async uploadReel(
@@ -49,37 +21,29 @@ export class ReelContract {
     songImages: string[],
     songLinks: string[]
   ) {
-    return this.walletClient.writeContract({
-      address: this.contractAddress,
-      abi: contractAbi,
-      functionName: "uploadReel",
-      args: [ipfsHash, title, isDerivative, songNames, songImages, songLinks],
-    });
+    const tx = await this.contract.uploadReel(
+      ipfsHash,
+      title,
+      isDerivative,
+      songNames,
+      songImages,
+      songLinks
+    );
+
+    await tx.wait();
+
+    return tx;
   }
 
-  async getAllReels(): Promise<ReadContractReturnType> {
-    return this.publicClient.readContract({
-      address: this.contractAddress,
-      abi: contractAbi,
-      functionName: "getAllReels",
-    });
+  async getAllReels(): Promise<any> {
+    return this.contract.getAllReels();
   }
 
-  async getUserReels(userAddress: Hex): Promise<ReadContractReturnType> {
-    return this.publicClient.readContract({
-      address: this.contractAddress,
-      abi: contractAbi,
-      functionName: "getUserReels",
-      args: [userAddress],
-    });
+  async getUserReels(userAddress: string): Promise<any> {
+    return this.contract.getUserReels(userAddress);
   }
 
-  async getUserProfile(userAddress: Hex): Promise<ReadContractReturnType> {
-    return this.publicClient.readContract({
-      address: this.contractAddress,
-      abi: contractAbi,
-      functionName: "getUserProfile",
-      args: [userAddress],
-    });
+  async getUserProfile(userAddress: string): Promise<any> {
+    return this.contract.getUserProfile(userAddress);
   }
 }

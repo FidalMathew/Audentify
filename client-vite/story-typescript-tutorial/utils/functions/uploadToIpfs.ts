@@ -1,8 +1,4 @@
 import { PinataSDK } from 'pinata'
-import fs from 'fs'
-import path from 'path'
-// import 'dotenv/config'
-import axios from 'axios'
 
 const pinata = new PinataSDK({
     // @ts-ignore

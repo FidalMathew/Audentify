@@ -1,9 +1,13 @@
 import { Onboard, useConnectModal } from "@tomo-inc/tomo-evm-kit";
 // import { ethers } from "ethers";
-import "@/App.css";
+import { Button } from "@/components/ui/button";
+import { storyAeneid } from "viem/chains";
+// import { ethers } from "ethers";
+import { useState } from "react";
 
 function Connect() {
   const { openConnectModal } = useConnectModal();
+  // const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
 
   const performAction = async () => {
     console.log("Performing action...");
@@ -26,7 +30,7 @@ function Connect() {
 
     const onboard = await Onboard({
       wallets: [],
-      chains,
+      chains: [storyAeneid],
       appMetadata,
       theme: "default",
       clientId:
@@ -36,18 +40,18 @@ function Connect() {
 
     const wallets = await onboard.connectWallet();
     const currentWallet = wallets[0];
-    // const walletProvider = wallet.provider;
+    const walletProvider = currentWallet.provider;
     // const provider = new ethers.BrowserProvider(walletProvider);
     // provider.send('personal_sign', ["0x313233", fromAccount]);
-
+    // setProvider(provider);
     console.log("Wallet connected:", currentWallet);
     // console.log("Provider:", provider);
   };
 
   return (
     <>
-      <button onClick={openConnectModal}>Connect Wallet</button>
-      <button onClick={performAction}>Perform Action</button>
+      <Button onClick={openConnectModal}>Connect Wallet</Button>
+      <Button onClick={performAction}>Perform Action</Button>
     </>
   );
 }
