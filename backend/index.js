@@ -5,16 +5,23 @@ const dotenv = require("dotenv");
 const express = require("express");
 const ffmpeg = require("fluent-ffmpeg");
 const FormData = require("form-data");
-const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
+const cloudinary = require('cloudinary').v2;
+const multer = require('multer');
+const fs = require('fs');
 
 const { existsSync, mkdirSync, readdirSync, rmSync } = fs;
+
+
+
+
 
 dotenv.config(); // Load .env variables
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 const app = express();
+const upload = multer({ dest: 'uploads/' });
 const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
@@ -45,16 +52,16 @@ function buildStringToSign(
 
 function sign(signString, accessSecret) {
   return crypto
-    .createHmac("sha1", accessSecret)
-    .update(Buffer.from(signString, "utf-8"))
-    .digest()
-    .toString("base64");
+  .createHmac("sha1", accessSecret)
+  .update(Buffer.from(signString, "utf-8"))
+  .digest()
+  .toString("base64");
 }
 
 async function identifyChunk(chunkPath) {
   const data = fs.readFileSync(chunkPath);
   const timestamp = Math.floor(Date.now() / 1000);
-
+  
   if (
     !ACR_OPTIONS.endpoint ||
     !ACR_OPTIONS.access_key ||
@@ -64,7 +71,7 @@ async function identifyChunk(chunkPath) {
   ) {
     throw new Error("Missing required ACRCloud configuration.");
   }
-
+  
   const stringToSign = buildStringToSign(
     "POST",
     ACR_OPTIONS.endpoint,
@@ -74,7 +81,7 @@ async function identifyChunk(chunkPath) {
     timestamp
   );
   const signature = sign(stringToSign, ACR_OPTIONS.access_secret);
-
+  
   const form = new FormData();
   form.append("sample", data, {
     filename: "sample.mp3",
@@ -86,71 +93,71 @@ async function identifyChunk(chunkPath) {
   form.append("signature_version", ACR_OPTIONS.signature_version);
   form.append("signature", signature);
   form.append("timestamp", timestamp.toString());
-
+  
   const response = await axios.post(
     `http://${ACR_OPTIONS.host}${ACR_OPTIONS.endpoint}`,
     form,
     { headers: form.getHeaders() }
   );
-
+  
   return response.data;
 }
 
 function convertVideoStreamToAudio(videoUrl, audioOutputPath) {
   return new Promise((resolve, reject) => {
     ffmpeg(videoUrl)
-      .outputOptions("-vn")
-      .toFormat("mp3")
-      .on("end", () => resolve())
-      .on("error", (err) => reject(err))
-      .save(audioOutputPath);
+    .outputOptions("-vn")
+    .toFormat("mp3")
+    .on("end", () => resolve())
+    .on("error", (err) => reject(err))
+    .save(audioOutputPath);
   });
 }
 
 function splitAudio(inputPath, outputDir, chunkDuration = 10) {
   return new Promise((resolve, reject) => {
     if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
-
+    
     const outputPattern = path.join(outputDir, "chunk_%03d.mp3");
-
+    
     ffmpeg(inputPath)
-      .outputOptions([
-        "-f segment",
-        `-segment_time ${chunkDuration}`,
-        "-c copy",
-      ])
-      .output(outputPattern)
-      .on("end", () => {
-        const files = readdirSync(outputDir)
-          .filter((file) => file.endsWith(".mp3"))
-          .map((file) => path.join(outputDir, file));
-        resolve(files);
-      })
-      .on("error", (err) => reject(err))
-      .run();
+    .outputOptions([
+      "-f segment",
+      `-segment_time ${chunkDuration}`,
+      "-c copy",
+    ])
+    .output(outputPattern)
+    .on("end", () => {
+      const files = readdirSync(outputDir)
+      .filter((file) => file.endsWith(".mp3"))
+      .map((file) => path.join(outputDir, file));
+      resolve(files);
+    })
+    .on("error", (err) => reject(err))
+    .run();
   });
 }
 
 app.post("/identify", async (req, res) => {
   const { videoLink } = req.body;
-
+  
   if (!videoLink || typeof videoLink !== "string") {
     return res.status(400).json({ message: "Missing or invalid videoLink" });
   }
-
+  
   const timestamp = Date.now();
   const tempDir = path.join(process.cwd(), "temp", timestamp.toString());
   const audioPath = path.join(tempDir, "audio.mp3");
   const chunkDir = path.join(tempDir, "chunks");
-
+  
   try {
     mkdirSync(tempDir, { recursive: true });
-
+    
     await convertVideoStreamToAudio(videoLink, audioPath);
     const chunks = await splitAudio(audioPath, chunkDir, 10);
-
+    
     const results = [];
-
+    
     for (const chunkPath of chunks) {
       try {
         const result = await identifyChunk(chunkPath);
@@ -159,9 +166,9 @@ app.post("/identify", async (req, res) => {
         results.push({ file: path.basename(chunkPath), error: err.message });
       }
     }
-
+    
     rmSync(tempDir, { recursive: true, force: true });
-
+    
     res.status(200).json({ message: "Processed successfully", results });
   } catch (err) {
     console.error("Error:", err);
@@ -173,6 +180,51 @@ app.post("/identify", async (req, res) => {
 app.get("/", (req, res) => {
   res.send("Welcome to the Audentify Audio Identification API!");
 });
+
+cloudinary.config({
+    cloud_name: 'dzan5ijtx',
+    // @ts-ignore
+    api_key: process.env.VITE_CLOUDINARY_API_KEY, // Click 'View API Keys' above to copy your API key
+    // @ts-ignore
+    api_secret: process.env.VITE_CLOUDINARY_API_SECRET, // Click 'View API Keys' above to copy your API secret
+})
+
+
+app.post('/upload', upload.single('file'), async (req, res) => {
+  try {
+    const filePath = req.file.path;
+    const mimeType = req.file.mimetype;
+    const ext = path.extname(req.file.originalname).toLowerCase();
+
+    let resourceType;
+
+    if (mimeType.startsWith('image/')) resourceType = 'image';
+    else if (mimeType.startsWith('video/')) resourceType = 'video';
+    else if (ext === '.json') {
+      resourceType = 'raw'; // Cloudinary requirement for JSON
+    } else {
+      return res.status(400).json({ error: 'Unsupported file type' });
+    }
+
+    const uploadResult = await cloudinary.uploader.upload(filePath, {
+      resource_type: resourceType,
+      public_id: path.parse(req.file.originalname).name,
+    });
+
+    fs.unlinkSync(filePath);
+
+    return res.json({
+      type: resourceType,
+      url: uploadResult.secure_url,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Upload failed');
+  }
+});
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

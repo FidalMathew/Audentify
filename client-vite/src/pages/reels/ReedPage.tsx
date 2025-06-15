@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
+import { useGlobalContext } from "@/Context/useGlobalContext";
+import Connect from "../Connect";
 
 interface ReelDetailPageProps {
   params: {
@@ -20,8 +22,16 @@ const handleRedirect = () => {
 export default function ReelDetailPage() {
   const { reelId } = useParams<{ reelId: string }>();
   console.log("Reel ID from params:", reelId);
+  const { wallet } = useGlobalContext();
 
   const reel = mockReels.find((r) => r.id === reelId);
+
+  if (!wallet)
+    return (
+      <div>
+        <Connect />
+      </div>
+    );
 
   if (!reel) {
     return (

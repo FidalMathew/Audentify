@@ -44,7 +44,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
     const setContract = async () => {
       try {
-        const contractAddress = "0xFc1E0f63aF947254834610510932C7C0d295405F";
+        const contractAddress = "0x25EDAda3281FeE29E300f318217af32D98D35Ff1";
         const walletProvider = wallet.provider;
         const provider = new ethers.BrowserProvider(walletProvider);
         // //     // provider.send('personal_sign', ["0x313233", fromAccount]);

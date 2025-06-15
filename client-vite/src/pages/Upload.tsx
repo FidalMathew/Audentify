@@ -10,10 +10,12 @@ import type React from "react";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { mockAudioResult as MockAudioResultType } from "@/data/mockResult";
+import { v2 as cloudinary } from "cloudinary";
 import {
   mintAndRegisterIP,
   registerIPandMakeDerivativeFunc,
 } from "@/lib/utils";
+import Connect from "./Connect";
 
 type CheckpointStatus = "idle" | "loading" | "success" | "error";
 
@@ -70,7 +72,7 @@ function Checkpoint({ title, status, message, progress }: CheckpointProps) {
 
 export default function Upload1() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { smartContract } = useGlobalContext();
+  const { smartContract, wallet } = useGlobalContext();
 
   const formikRef = useRef<FormikProps<{
     reelTitle: string;
@@ -440,6 +442,7 @@ export default function Upload1() {
 
   const uploadToBlockchain = async () => {
     try {
+      if (!smartContract) return;
       setBlockchainUploadStatus("loading");
       setBlockchainUploadMessage("Uploading to blockchain...");
       let currentProgress = 0;
@@ -456,11 +459,20 @@ export default function Upload1() {
       //   [] // songLinks (array of song links)
       // );
 
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true);
-        }, 2000);
-      });
+      const res = await smartContract.uploadReel(
+        "bafybeifixgtek4ooz2qqoam2iitstg3wedsomphuilneh2f7v5wf6xvofq", // ipfsHash (example)
+        "RGERGER",
+        true, // isDerivative (example: true)
+        ["GERGERG"],
+        ["GRGGERGR"], // songImages (example)
+        ["rgerger"] // songLinks (example)
+      );
+
+      // await new Promise((resolve) => {
+      //   setTimeout(() => {
+      //     resolve(true);
+      //   }, 2000);
+      // });
 
       const interval = setInterval(() => {
         currentProgress += 20;
@@ -501,6 +513,13 @@ export default function Upload1() {
     isDoneWithRegisteringIPasDerivativeStatus === "error";
 
   const isRegistrationComplete = isDoneWithRegisteringIPStatus === "success";
+
+  if (!wallet)
+    return (
+      <div>
+        <Connect />
+      </div>
+    );
 
   return (
     <div

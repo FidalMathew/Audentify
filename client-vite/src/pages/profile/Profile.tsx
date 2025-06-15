@@ -3,9 +3,12 @@ import { Separator } from "@/components/ui/separator";
 import { ReelCard } from "@/components/ReelCard";
 import { mockUsers, mockReels } from "@/data/mock-data";
 import { useParams } from "react-router-dom";
+import { useGlobalContext } from "@/Context/useGlobalContext";
+import Connect from "../Connect";
 
 export default function UserProfilePage() {
   const { profileId } = useParams<{ profileId: string }>();
+  const { wallet } = useGlobalContext();
 
   const user = mockUsers.find((u) => u.id === profileId);
   const userReels = mockReels.filter((r) => r.userId === profileId);
@@ -15,6 +18,13 @@ export default function UserProfilePage() {
       <div className="text-center text-muted-foreground">User not found.</div>
     );
   }
+
+  if (!wallet)
+    return (
+      <div>
+        <Connect />
+      </div>
+    );
 
   return (
     <section className="py-8">

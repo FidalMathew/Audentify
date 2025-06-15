@@ -1,4 +1,5 @@
 import { PinataSDK } from 'pinata'
+import axios from 'axios'
 
 const pinata = new PinataSDK({
     // @ts-ignore
@@ -17,11 +18,16 @@ export async function uploadFileToIPFS(file: File): Promise<string> {
     // const fullPath = path.join(process.cwd(), filePath)
     // const blob = new Blob([fs.readFileSync(fullPath)])
     // const file = new File([blob], fileName, { type: fileType })
-    console.log('received')
-    console.log('objects file', file)
-    const { cid: IpfsHash } = await pinata.upload.public.file(file)
-    console.log(IpfsHash, 'file uploaded to IPFS')
-    return IpfsHash
+    // console.log('received')
+    // console.log('objects file', file)
+    // const { cid: IpfsHash } = await pinata.upload.public.file(file)
+    // console.log(IpfsHash, 'file uploaded to IPFS')
+    // return IpfsHash
+    // const formData = new FormData()
+    // formData.append('file', file) // key MUST be 'file' as per Pinata API
+    // formData.append('upload_preset', 'dzan5ijtx')
+    // axios.post('')
+    return ''
 }
 
 // export async function uploadFileToIPFS(file: File): Promise<string> {
