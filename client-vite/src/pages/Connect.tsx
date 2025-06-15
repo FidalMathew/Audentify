@@ -1,13 +1,17 @@
 import { Onboard, useConnectModal } from "@tomo-inc/tomo-evm-kit";
 // import { ethers } from "ethers";
-import { Button } from "@/components/ui/button";
 import { storyAeneid } from "viem/chains";
 // import { ethers } from "ethers";
+import { useGlobalContext } from "@/Context/useGlobalContext";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 function Connect() {
+  const { setWallet } = useGlobalContext();
   const { openConnectModal } = useConnectModal();
   // const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
+
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
   const performAction = async () => {
     console.log("Performing action...");
@@ -44,14 +48,22 @@ function Connect() {
     // const provider = new ethers.BrowserProvider(walletProvider);
     // provider.send('personal_sign', ["0x313233", fromAccount]);
     // setProvider(provider);
+    console.log("setWallet called", setWallet);
     console.log("Wallet connected:", currentWallet);
+    setWallet(currentWallet);
+    // setWalletAddress(currentWallet.accounts[0]);
     // console.log("Provider:", provider);
   };
 
   return (
     <>
-      <Button onClick={openConnectModal}>Connect Wallet</Button>
-      <Button onClick={performAction}>Perform Action</Button>
+      <Button onClick={() => openConnectModal?.()}>Connect Wallet</Button>
+      {walletAddress && (
+        <div>
+          <p>Connected Wallet Address: {walletAddress}</p>
+        </div>
+      )}
+      <Button onClick={() => performAction()}>Perform Action</Button>
     </>
   );
 }
