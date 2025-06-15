@@ -7,6 +7,12 @@ import { mainnet } from "wagmi/chains";
 import App from "./App.tsx";
 import "./index.css";
 
+// import { Buffer } from "buffer";
+// import process from "process";
+
+// window.Buffer = Buffer;
+// window.process = process;
+
 const config = getDefaultConfig({
   clientId: import.meta.env.VITE_CLIENT_ID, // Replace with your clientId
   appName: import.meta.env.VITE_CLIENT_APPNAME, // Replace with your appName

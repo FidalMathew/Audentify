@@ -2,11 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { useGlobalContext } from "@/Context/useGlobalContext";
+import { mockAudioResult } from "@/data/mockResult";
 import { Field, Form, Formik, type FormikProps } from "formik";
 import { CheckCircle, Loader2, Upload, XCircle } from "lucide-react";
 import type React from "react";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import type { mockAudioResult as MockAudioResultType } from "@/data/mockResult";
+import { mintAndRegisterIP } from "@/lib/utils";
 
 type CheckpointStatus = "idle" | "loading" | "success" | "error";
 
@@ -63,6 +67,7 @@ function Checkpoint({ title, status, message, progress }: CheckpointProps) {
 
 export default function Upload1() {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { smartContract } = useGlobalContext();
 
   const formikRef = useRef<FormikProps<{
     reelTitle: string;
@@ -98,6 +103,9 @@ export default function Upload1() {
     setIsDoneWithRegisteringIPasDerivativeProgress,
   ] = useState(0);
 
+  const [uploadToBlockchainStatus, setUploadToBlockchainStatus] =
+    useState(false);
+
   const [findSimilarityStatus, setFindSimilarityStatus] =
     useState<CheckpointStatus>("idle");
   const [findSimilarityMessage, setFindSimilarityMessage] = useState("");
@@ -108,6 +116,22 @@ export default function Upload1() {
     useState<CheckpointStatus>("idle");
   const [uploadToIpfsMessage, setUploadToIpfsMessage] = useState("");
   const [uploadToIpfsProgress, setUploadToIpfsProgress] = useState(0);
+
+  const [blockchainUploadStatus, setBlockchainUploadStatus] =
+    useState<CheckpointStatus>("idle");
+  const [blockchainUploadMessage, setBlockchainUploadMessage] = useState("");
+  const [blockchainUploadProgress, setBlockchainUploadProgress] = useState(0);
+
+  const [audioResult, setAudioResult] = useState<
+    | {
+        title: string;
+        trackId?: string;
+        artistName?: string;
+        artistId?: string;
+        score?: number;
+      }[]
+    | null
+  >(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -215,6 +239,38 @@ export default function Upload1() {
           });
         }, 3000);
       });
+
+      const uniqueTitles = new Set<string>();
+      const uniqueResults: {
+        title: string;
+        trackId?: string;
+        albumId?: string;
+        artistName?: string;
+        artistId?: string;
+        score?: number;
+      }[] = [];
+
+      mockAudioResult.results.forEach((audio) => {
+        const music = audio.result.metadata.music[0].external_metadata;
+        const title = music?.spotify?.track.name;
+        const trackId = music?.spotify?.track.id;
+        const artistName = music?.spotify?.artists[0].name;
+        const artistId = music?.spotify?.artists[0].id;
+        const score = audio.result.metadata.music[0].score;
+        if (title && !uniqueTitles.has(title)) {
+          uniqueTitles.add(title);
+          uniqueResults.push({
+            title,
+            trackId,
+            artistName,
+            artistId,
+            score,
+          });
+        }
+      });
+
+      setAudioResult(uniqueResults);
+
       console.log("Audio analysis result:", result.data);
       // await new Promise((resolve) =>
       //   setTimeout(() => {
@@ -234,7 +290,9 @@ export default function Upload1() {
       clearInterval(interval);
 
       setFindSimilarityProgress(100);
-      setFindSimilarityMessage(`Audio analysis complete. Similarity score:`);
+      setFindSimilarityMessage(
+        `Audio analysis complete. Similarity score: ${mockAudioResult.results[0].result.metadata.music[0].score}`
+      );
       setFindSimilarityStatus("success");
     } catch (error) {
       setFindSimilarityStatus("error");
@@ -327,11 +385,12 @@ export default function Upload1() {
 
       let currentProgress = 0;
       setIsDoneWithRegisteringIPasDerivativeProgress(currentProgress);
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true);
-        }, 3000);
-      });
+      // await new Promise((resolve) => {
+      //   setTimeout(() => {
+      //     resolve(true);
+      //   }, 3000);
+      // });
+
       const interval = setInterval(() => {
         currentProgress += 10;
         setIsDoneWithRegisteringIPasDerivativeProgress(currentProgress);
@@ -361,11 +420,70 @@ export default function Upload1() {
     try {
       setIsRegistering(true);
       await setAsIP();
+      await uploadToBlockchain();
       setIsRegistering(false);
     } catch (error) {
       console.error("IP registration error:", error);
     }
   };
+
+  const uploadToBlockchain = async () => {
+    try {
+      setBlockchainUploadStatus("loading");
+      setBlockchainUploadMessage("Uploading to blockchain...");
+      let currentProgress = 0;
+
+      // Simulate blockchain upload
+      // You need to provide actual values for these arguments
+      // Example values are used below; replace them with real data as needed
+      await smartContract.uploadReel(
+        "bafybeifixgtek4ooz2qqoam2iitstg3wedsomphuilneh2f7v5wf6xvofq", // Replace with actual IPFS hash
+        formikRef.current?.values.reelTitle || "Untitled", // Reel title
+        false, // isDerivative (set to true if derivative)
+        [], // songNames (array of song names)
+        [], // songImages (array of song image URLs)
+        [] // songLinks (array of song links)
+      );
+
+      // await new Promise((resolve) => {
+      //   setTimeout(() => {
+      //     resolve(true);
+      //   }, 2000);
+      // });
+
+      const interval = setInterval(() => {
+        currentProgress += 20;
+        setBlockchainUploadProgress(currentProgress);
+        if (currentProgress >= 100) {
+          clearInterval(interval);
+        }
+      }, 200);
+
+      clearInterval(interval);
+      setBlockchainUploadProgress(100);
+
+      setBlockchainUploadStatus("success");
+      setBlockchainUploadMessage("Successfully uploaded to blockchain.");
+    } catch (error) {
+      setBlockchainUploadStatus("error");
+      setBlockchainUploadMessage("Failed to upload to blockchain.");
+      setBlockchainUploadProgress(0);
+      console.error("Blockchain upload error:", error);
+    }
+  };
+
+  // const handleUploadBlockchain = async () => {
+  //   try {
+  //     setUploadToBlockchainStatus(true);
+  //     await uploadToBlockchain();
+  //     setUploadToBlockchainStatus(false);
+  //   } catch (error) {
+  //     setUploadToBlockchainStatus(false);
+  //     setBlockchainUploadStatus("error");
+  //     setBlockchainUploadMessage("Failed to upload to blockchain.");
+  //     console.error("Blockchain upload error:", error);
+  //   }
+  // };
 
   const isRegistrationError =
     isDoneWithRegisteringIPStatus === "error" ||
@@ -581,12 +699,9 @@ export default function Upload1() {
 
                         {isSimilarityComplete && (
                           <div className="mt-4 pt-3 border-t text-center">
-                            <p className="text-green-600 font-semibold text-sm">
-                              Upload Complete!
-                            </p>
-                            {true && true ? (
+                            {/* {true && true ? (
                               true && (
-                                <div className="space-y-1">
+                                <div className="space-y-3 py-2">
                                   <p className="text-yellow-600 font-semibold text-sm">
                                     Audio is Derivative
                                   </p>
@@ -608,8 +723,47 @@ export default function Upload1() {
                               )
                             ) : (
                               <p></p>
-                            )}
+                            )} */}
 
+                            {audioResult &&
+                              audioResult.map((audio) => (
+                                <div className="space-y-3 py-2">
+                                  {audio.score && audio.score > 70 ? (
+                                    <p className="text-yellow-600 font-semibold text-sm">
+                                      Audio is Derivative
+                                    </p>
+                                  ) : (
+                                    <p className="text-green-600 font-semibold text-sm">
+                                      Audio is Unique
+                                    </p>
+                                  )}
+                                  <p className="text-xs text-muted-foreground">
+                                    <Button
+                                      type="button"
+                                      onClick={() =>
+                                        mintAndRegisterIP(
+                                          audio.title,
+                                          audio.artistName!,
+                                          "https://open.spotify.com/track/3GpbwCm3YxiWDvy29Uo3vP",
+                                          "https://i.scdn.co/image/ab67616d00001e0218aa5d7e6d484b832cd5d03f"
+                                        )
+                                      }
+                                    >
+                                      Set as an IP
+                                    </Button>
+                                    {audio && audio.title ? (
+                                      <Link
+                                        to={`/reels/${audio.trackId}`}
+                                        className="text-blue-600 hover:underline"
+                                      >
+                                        {audio.title}
+                                      </Link>
+                                    ) : (
+                                      "N/A"
+                                    )}
+                                  </p>
+                                </div>
+                              ))}
                             <Button
                               onClick={() => handleIPRegistrations()}
                               className="w-full mt-2"
@@ -663,16 +817,25 @@ export default function Upload1() {
                         </div>
 
                         {isRegistrationComplete && (
-                          <Button
-                            onClick={() => {
-                              resetAnalysisState();
-                              resetUploadState();
-                            }}
-                            className="w-full mt-2"
-                            size="sm"
-                          >
-                            Upload Another
-                          </Button>
+                          <div>
+                            <Checkpoint
+                              title="2. Uploading to Blockchain"
+                              status={blockchainUploadStatus}
+                              message={blockchainUploadMessage}
+                              progress={blockchainUploadProgress}
+                            />
+
+                            <Button
+                              onClick={() => {
+                                resetAnalysisState();
+                                resetUploadState();
+                              }}
+                              className="w-full mt-2"
+                              size="sm"
+                            >
+                              Upload Another
+                            </Button>
+                          </div>
                         )}
 
                         {isRegistrationError && (
@@ -680,6 +843,7 @@ export default function Upload1() {
                             <p className="text-red-600 font-semibold text-sm">
                               Registration failed
                             </p>
+
                             <Button
                               onClick={() => {
                                 setIsUploading(false);

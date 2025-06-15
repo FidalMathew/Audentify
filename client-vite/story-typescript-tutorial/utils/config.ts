@@ -41,7 +41,7 @@ const networkConfigs: Record<NetworkType, NetworkConfig> = {
 // Helper functions
 const validateEnvironmentVars = () => {
     // @ts-ignore
-    if (!process.env.VITE_WALLET_PRIVATE_KEY) {
+    if (!import.meta.env.VITE_WALLET_PRIVATE_KEY) {
         throw new Error('WALLET_PRIVATE_KEY is required in .env file')
     }
 }
@@ -61,10 +61,10 @@ validateEnvironmentVars()
 export const networkInfo = {
     ...networkConfigs[network],
     // @ts-ignore
-    rpcProviderUrl: process.env.RPC_PROVIDER_URL || networkConfigs[network].rpcProviderUrl,
+    rpcProviderUrl: import.meta.env.RPC_PROVIDER_URL || networkConfigs[network].rpcProviderUrl,
 }
 // @ts-ignore
-export const account: Account = privateKeyToAccount(`0x${process.env.VITE_WALLET_PRIVATE_KEY}` as Address)
+export const account: Account = privateKeyToAccount(`0x${import.meta.env.VITE_WALLET_PRIVATE_KEY}` as Address)
 
 const config: StoryConfig = {
     account,

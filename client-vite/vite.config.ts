@@ -2,25 +2,69 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
+import inject from "@rollup/plugin-inject";
+import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
+import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfill";
 
-// https://vite.dev/config/
 export default ({ mode }: { mode: string }) => {
   const env = loadEnv(mode, process.cwd());
-
-  // 2. Option A: Merge into process.env for NodeJS access
   process.env = { ...process.env, ...env };
 
   return defineConfig({
-    plugins: [react(), tailwindcss(), nodePolyfills()],
+    plugins: [
+      react(),
+      tailwindcss(),
+
+      // inject Buffer and process for runtime
+      {
+        ...inject({
+          Buffer: ["buffer", "Buffer"],
+          process: "process",
+        }),
+        enforce: "post",
+      },
+    ],
+
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
+
+        // Required polyfills
+        stream: "stream-browserify",
+        buffer: "buffer",
+        process: "process/browser",
+        crypto: "crypto-browserify",
+        util: "util",
+        assert: "assert",
       },
     },
+
     define: {
-      global: {}, // if you see 'global is not defined'
+      global: "globalThis", // Critical fix for browser polyfill
       "process.env": env,
+    },
+
+    optimizeDeps: {
+      include: [
+        "buffer",
+        "process",
+        "stream-browserify",
+        "crypto-browserify",
+        "util",
+        "assert",
+      ],
+      esbuildOptions: {
+        define: {
+          global: "globalThis",
+        },
+        plugins: [
+          NodeGlobalsPolyfillPlugin({
+            buffer: true,
+            process: true,
+          }),
+          NodeModulesPolyfillPlugin(),
+        ],
+      },
     },
   });
 };

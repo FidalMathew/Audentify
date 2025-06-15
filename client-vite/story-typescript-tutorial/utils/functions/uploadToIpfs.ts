@@ -5,13 +5,14 @@ import path from 'path'
 import axios from 'axios'
 
 const pinata = new PinataSDK({
-    pinataJwt: process.env.VITE_PINATA_JWT,
-    pinataGateway: 'lavender-intensive-mouse-745.mypinata.cloud',
+    // @ts-ignore
+    pinataJwt: import.meta.env.VITE_PINATA_JWT,
+    // pinataGateway: 'lavender-intensive-mouse-745.mypinata.cloud',
 })
 
 export async function uploadJSONToIPFS(jsonMetadata: any): Promise<string> {
-    const { cid: IpfsHash } = await pinata.upload.public.json(jsonMetadata)
-    return IpfsHash
+    // const { cid: IpfsHash } = await pinata.upload.public.json(jsonMetadata)
+    return 'bafkreiclg7l4llqugmqbngcompahpll4kwbwvpnycbu5r2fpsrz6z452ky'
 }
 
 // could use this to upload music (audio files) to IPFS
@@ -33,7 +34,7 @@ export async function uploadFileToIPFS(file: File): Promise<string> {
 
 //     const response = await axios.post('https://uploads.pinata.cloud/v3/files', formData, {
 //         headers: {
-//             Authorization: `Bearer ${process.env.VITE_PINATA_JWT}`,
+//             Authorization: `Bearer ${import.meta.env.VITE_PINATA_JWT}`,
 //             // DO NOT manually set 'Content-Type' — let Axios handle it
 //         },
 //     })

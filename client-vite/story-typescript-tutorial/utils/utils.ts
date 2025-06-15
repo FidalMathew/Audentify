@@ -8,10 +8,12 @@ import { networkInfo } from './config'
 
 // Export contract addresses with appropriate defaults based on network
 export const NFTContractAddress: Address =
-    (process.env.VITE_NFT_CONTRACT_ADDRESS as Address) || networkInfo.defaultNFTContractAddress || zeroAddress
+    // @ts-ignore
+    (import.meta.env.VITE_NFT_CONTRACT_ADDRESS as Address) || networkInfo.defaultNFTContractAddress || zeroAddress
 
 export const SPGNFTContractAddress: Address =
-    (process.env.VITE_SPG_NFT_CONTRACT_ADDRESS as Address) || networkInfo.defaultSPGNFTContractAddress || zeroAddress
+    // @ts-ignore
+    (import.meta.env.VITE_SPG_NFT_CONTRACT_ADDRESS as Address) || networkInfo.defaultSPGNFTContractAddress || zeroAddress
 
 // This is a pre-configured PIL Flavor:
 // https://docs.story.foundation/concepts/programmable-ip-license/pil-flavors#flavor-%231%3A-non-commercial-social-remixing

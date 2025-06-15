@@ -3,8 +3,8 @@ import {
   createPublicClient,
   http,
   parseEther,
-  Hex,
-  ReadContractReturnType,
+  type Hex,
+  type ReadContractReturnType,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { abi as contractAbi } from "@/data/abi"; // Import your ABI here

@@ -1,20 +1,31 @@
 import { ReelContract } from "@/lib/ReelContract";
-import { createContext, ReactNode } from "react";
-import { Hex } from "viem";
+import { createContext, type ReactNode } from "react";
+import type { Hex } from "viem";
 
 type GlobalContextType = {
-  walletAddress?: string;
+  smartContract: ReelContract;
 };
 
-export const GlobalContext = createContext<GlobalContextType>({
-  walletAddress: undefined,
-});
-
-const r = new ReelContract(
-  "0x3bbBefA6F76eB11FEcd720541f01410373d67F39",
-  `0x${import.meta.env.VITE__WALLET_PRIVATE_KEY!}` as Hex
+const smartContract = new ReelContract(
+  "0x8127406B9724304B16Dbb602bC0006c409668841",
+  `0x${import.meta.env.VITE_WALLET_PRIVATE_KEY!}` as Hex
 );
 
+export const GlobalContext = createContext<GlobalContextType>({
+  smartContract: new ReelContract(
+    "",
+    `0x${import.meta.env.VITE_WALLET_PRIVATE_KEY!}`
+  ),
+});
+
 export const WalletProvider = ({ children }: { children: ReactNode }) => {
-  return <GlobalContext.Provider value={{}}>{children}</GlobalContext.Provider>;
+  return (
+    <GlobalContext.Provider
+      value={{
+        smartContract,
+      }}
+    >
+      {children}
+    </GlobalContext.Provider>
+  );
 };
