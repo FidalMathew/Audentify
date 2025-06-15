@@ -38,7 +38,9 @@ export const registerIPandMakeDerivative = async function (
         //     nftMetadataURI: 'test-nft-uri',
         // },
 
+        // @ts-ignore
         ipMetadata: ipMetadataCreated,
+        // @ts-ignore
         txOptions: { waitForTransaction: true },
     })
     console.log('Derivative IPA created and linked:', {
@@ -58,5 +60,5 @@ export const registerIPandMakeDerivative = async function (
     // })
     // console.log('Parent claimed revenue receipt:', parentClaimRevenue)
 
-    return `https://aeneid.storyscan.xyz/ip/${childIp.ipId}`
+    return `https://aeneid.explorer.story.foundation/ipa/${childIp.ipId}`
 }

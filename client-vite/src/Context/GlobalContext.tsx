@@ -1,5 +1,5 @@
 // import { ReelContract } from "@/lib/ReelContract";
-import { abi as contractAbi } from "@/data/abi"; // Your contract ABI
+import { abi as contractAbi } from "story-typescript-tutorial/data/abi"; // Your contract ABI
 import { ethers } from "ethers";
 
 import { createContext, useEffect, useState, type ReactNode } from "react";

@@ -5,7 +5,7 @@ import { Header } from "./components/Header.tsx";
 import { WalletProvider } from "./Context/GlobalContext.tsx";
 import Connect from "./pages/Connect.tsx";
 import UserProfilePage from "./pages/profile/Profile";
-import ReelDetailPage from "./pages/reels/ReedPage";
+import ReelDetailPage from "./pages/reels/ReelPage.tsx";
 import Upload1 from "./pages/Upload.tsx";
 import { useGlobalContext } from "./Context/useGlobalContext.tsx";
 

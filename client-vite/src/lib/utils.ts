@@ -97,4 +97,6 @@ export const registerIPandMakeDerivativeFunc = async (
 
   // setStatus(`Derivative Registered: ${derivativeUrl}`);
   console.log("Derivative URL:", derivativeUrl);
+
+  return derivativeUrl;
 };

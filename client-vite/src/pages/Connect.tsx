@@ -56,7 +56,7 @@ function Connect() {
   };
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center h-screen space-y-4">
       <Button onClick={() => openConnectModal?.()}>Connect Wallet</Button>
       {/* {walletAddress && (
         <div>
@@ -65,7 +65,7 @@ function Connect() {
         </div>
       )} */}
       <Button onClick={() => performAction()}>Perform Action</Button>
-    </>
+    </div>
   );
 }
 

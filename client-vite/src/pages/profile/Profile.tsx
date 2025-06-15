@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { ReelCard } from "@/components/ReelCard";
-import { mockUsers, mockReels } from "@/data/mock-data";
+import { mockUsers, mockReels } from "story-typescript-tutorial/data/mock-data";
 import { useParams } from "react-router-dom";
 import { useGlobalContext } from "@/Context/useGlobalContext";
 import Connect from "../Connect";
@@ -31,14 +31,16 @@ export default function UserProfilePage() {
       <div className="flex flex-col items-center gap-4 mb-8">
         <Avatar className="h-24 w-24">
           <AvatarImage
-            src={user.avatarUrl || "/placeholder.svg"}
+            src={
+              "https://lh3.googleusercontent.com/a/ACg8ocKpFYfYlp22RpaC8jETUwDp3y7dXV6GWDMI0AIicTWbGSQphQk=s192-c-br100-rg-mo"
+            }
             alt={user.username}
           />
           <AvatarFallback>
             {user.username.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <h1 className="text-3xl font-bold">@{user.username}</h1>
+        <h1 className="text-3xl font-bold">@{"jaydeepdey03"}</h1>
         <p className="text-muted-foreground text-center max-w-md">{user.bio}</p>
       </div>
 

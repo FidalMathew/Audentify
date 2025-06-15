@@ -166,6 +166,9 @@ app.post("/identify", async (req, res) => {
         results.push({ file: path.basename(chunkPath), error: err.message });
       }
     }
+
+    console.log(results.length + " chunks")
+    console.log(results)
     
     rmSync(tempDir, { recursive: true, force: true });
     

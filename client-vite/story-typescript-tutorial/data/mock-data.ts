@@ -15,6 +15,7 @@ export type Reel = {
   audioInfo: AudioInfo;
   views: number;
   uploadDate: string;
+  storyLink?: string; // Optional link to a related story
 };
 
 export type User = {
@@ -48,9 +49,9 @@ export const mockUsers: User[] = [
 export const mockReels: Reel[] = [
   {
     id: "reel-1",
-    userId: "user-1",
-    username: "reelmaster",
-    title: "Morning Coffee Vibes",
+    userId: "abhijeetbhattacharya",
+    username: "abhijeetbhattacharya",
+    title: "Suno na Suno na",
     videoUrl:
       "https://lavender-intensive-mouse-745.mypinata.cloud/ipfs/bafybeigjp53wh64gqsro4s5wtxm7ngmeysbdqfck6mnv7kuqowr3wwn7su?pinataGatewayToken=nkOSKCiaIeIjvbxCbIisrfCZLj9O4kVEr3q1UVn5qO9Wx6UP7MegEpXfSzc_8MpH",
     thumbnailUrl: "",
@@ -58,21 +59,23 @@ export const mockReels: Reel[] = [
       isUnique: true,
     },
     views: 12345,
+    storyLink:
+      "https://aeneid.explorer.story.foundation/ipa/0x388d8961Ac5e2Ae55C347FaBD2B0633C5Afe76bc",
     uploadDate: "2024-05-20",
   },
   {
     id: "reel-2",
-    userId: "user-2",
-    username: "videovibes",
-    title: "Sunset Beach Walk",
+    userId: "jaydeepdey03",
+    username: "jaydeepdey03",
+    title: "Remix of Suno na Suno na",
     videoUrl:
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+      "https://lavender-intensive-mouse-745.mypinata.cloud/ipfs/bafybeif26jhw74aklu3uh3ut2zc5pkh44qcnoz6kwkailzmr3fyuhdnoxu?pinataGatewayToken=nkOSKCiaIeIjvbxCbIisrfCZLj9O4kVEr3q1UVn5qO9Wx6UP7MegEpXfSzc_8MpH",
     thumbnailUrl: "",
     audioInfo: {
       isUnique: false,
-      similarityScore: 85,
+      similarityScore: 100,
       similarToReelId: "reel-1",
-      similarToReelTitle: "Morning Coffee Vibes",
+      similarToReelTitle: "Suno na Suno na",
     },
     views: 8765,
     uploadDate: "2024-05-18",
@@ -89,6 +92,8 @@ export const mockReels: Reel[] = [
       isUnique: true,
     },
     views: 23456,
+    storyLink:
+      "https://aeneid.explorer.story.foundation/ipa/0x388d8961Ac5e2Ae55C347FaBD2B0633C5Afe76bc",
     uploadDate: "2024-05-15",
   },
   {

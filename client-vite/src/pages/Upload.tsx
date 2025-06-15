@@ -3,14 +3,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useGlobalContext } from "@/Context/useGlobalContext";
-import { mockAudioResult } from "@/data/mockResult";
-import { mintAndRegisterIP } from "@/lib/utils";
+import { mockAudioResult } from "story-typescript-tutorial/data/mockResult";
+import {
+  mintAndRegisterIP,
+  registerIPandMakeDerivativeFunc,
+} from "@/lib/utils";
 import { Field, Form, Formik, type FormikProps } from "formik";
 import { CheckCircle, Loader2, Upload, XCircle } from "lucide-react";
 import type React from "react";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Connect from "./Connect";
+import axios from "axios";
 
 type CheckpointStatus = "idle" | "loading" | "success" | "error";
 
@@ -216,29 +220,30 @@ export default function Upload1() {
       // integrate
 
       // cout<<
-      // const result = await axios.post("http://localhost:8000/identify", {
-      //   videoLink: "https://coral-light-cicada-276.mypinata.cloud/ipfs/" + hash,
-      //   // videoLink:
-      //   //   "https://coral-light-cicada-276.mypinata.cloud/ipfs/bafybeifixgtek4ooz2qqoam2iitstg3wedsomphuilneh2f7v5wf6xvofq",
-      // });
-
-      const result = await new Promise<{
-        data: {
-          similarityScore: number;
-          similarToReelTitle?: string;
-          similarToReelId?: string;
-        };
-      }>((resolve) => {
-        setTimeout(() => {
-          resolve({
-            data: {
-              similarityScore: 0.85,
-              similarToReelTitle: "Sample Reel Title",
-              similarToReelId: "12345",
-            },
-          });
-        }, 3000);
+      const result = await axios.post("http://localhost:8000/identify", {
+        videoLink:
+          "https://lavender-intensive-mouse-745.mypinata.cloud/ipfs/bafybeigjp53wh64gqsro4s5wtxm7ngmeysbdqfck6mnv7kuqowr3wwn7su?pinataGatewayToken=nkOSKCiaIeIjvbxCbIisrfCZLj9O4kVEr3q1UVn5qO9Wx6UP7MegEpXfSzc_8MpH",
+        // videoLink:
+        //   "https://coral-light-cicada-276.mypinata.cloud/ipfs/bafybeifixgtek4ooz2qqoam2iitstg3wedsomphuilneh2f7v5wf6xvofq",
       });
+
+      // const result = await new Promise<{
+      //   data: {
+      //     similarityScore: number;
+      //     similarToReelTitle?: string;
+      //     similarToReelId?: string;
+      //   };
+      // }>((resolve) => {
+      //   setTimeout(() => {
+      //     resolve({
+      //       data: {
+      //         similarityScore: 0.85,
+      //         similarToReelTitle: "Sample Reel Title",
+      //         similarToReelId: "12345",
+      //       },
+      //     });
+      //   }, 3000);
+      // });
 
       const uniqueTitles = new Set<string>();
       const uniqueResults: {
@@ -392,12 +397,12 @@ export default function Upload1() {
       });
       // Fill the parameters for registerIPandMakeDerivativeFunc
       // Example: await registerIPandMakeDerivativeFunc(title, artist, trackId, ...);
-      // await registerIPandMakeDerivativeFunc(
-      //   "0xd2FBBD463E8926C59eA075275259B48F3Fb1639b",
-      //   audioResult?.[0]?.artistName || "",
-      //   "0x3f93B8DCAf29D8B3202347018E23F76e697D8539"
-      //   // Add any other required parameters here
-      // );
+      const res = await registerIPandMakeDerivativeFunc(
+        "0x388d8961Ac5e2Ae55C347FaBD2B0633C5Afe76bc",
+        audioResult?.[0]?.artistName || "",
+        "0x3f93B8DCAf29D8B3202347018E23F76e697D8539"
+        // Add any other required parameters here
+      );
 
       const interval = setInterval(() => {
         currentProgress += 10;
@@ -412,7 +417,7 @@ export default function Upload1() {
 
       setIsDoneWithRegisteringIPasDerivativeStatus("success");
       setIsDoneWithRegisteringIPasDerivativeMessage(
-        "Derivative IP registered successfully."
+        `Derivative IP registered successfully. ${res && "Link: " + res}`
       );
     } catch (error) {
       setIsDoneWithRegisteringIPasDerivativeStatus("error");
@@ -763,7 +768,7 @@ export default function Upload1() {
                                     </p>
                                   )}
                                   <p className="text-xs text-muted-foreground">
-                                    <Button
+                                    {/* <Button
                                       type="button"
                                       onClick={() =>
                                         mintAndRegisterIP(
@@ -775,14 +780,17 @@ export default function Upload1() {
                                       }
                                     >
                                       Set as an IP
-                                    </Button>
+                                    </Button> */}
                                     {audio && audio.title ? (
-                                      <Link
-                                        to={`/reels/${audio.trackId}`}
-                                        className="text-blue-600 hover:underline"
-                                      >
-                                        {audio.title}
-                                      </Link>
+                                      <div className="flex justify-center flex-col">
+                                        <Link
+                                          to={`/reels/reel-1`}
+                                          className="text-blue-600 hover:underline"
+                                          target="_blank"
+                                        >
+                                          {audio.title}
+                                        </Link>
+                                      </div>
                                     ) : (
                                       "N/A"
                                     )}

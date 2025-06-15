@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import type { AudioInfo, Reel } from "@/data/mock-data";
+import type { AudioInfo, Reel } from "story-typescript-tutorial/data/mock-data";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 

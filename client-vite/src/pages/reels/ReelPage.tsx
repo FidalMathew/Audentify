@@ -1,8 +1,8 @@
-import { mockReels } from "@/data/mock-data";
+import { mockReels } from "story-typescript-tutorial/data/mock-data";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { useGlobalContext } from "@/Context/useGlobalContext";
@@ -97,24 +97,34 @@ export default function ReelDetailPage() {
                           <div className="flex items-center gap-3">
                             <div className="relative h-12 w-12 rounded-sm overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                               <img
-                                src="https://i.scdn.co/image/ab67616d00001e02707ea5b8023ac77d31756ed4"
+                                src="https://i.scdn.co/image/ab67616d0000b2735a781cddf53875af527d2cc7"
                                 alt="Album cover"
                                 className="h-full w-full object-cover"
                               />
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium leading-none truncate dark:text-zinc-200">
-                                Balam Pichkari
+                                {
+                                  <Link
+                                    to={`/reels/${reel.audioInfo.similarToReelId}`}
+                                    className="flex items-center gap-1"
+                                  >
+                                    {reel.audioInfo.similarToReelTitle}{" "}
+                                    <ArrowRight className="h-4 w-4" />
+                                  </Link>
+                                }
                               </p>
                               <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 truncate">
-                                Yeh Jawani hain Deewani
+                                {reel.audioInfo.similarToReelTitle}
                               </p>
                             </div>
                             <Button
                               variant="ghost"
                               size="sm"
                               className="h-8 w-8 p-0 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full shrink-0"
-                              onClick={handleRedirect}
+                              onClick={() =>
+                                window.open(`/reels/reel-1`, "_blank")
+                              }
                             >
                               <ExternalLink className="h-4 w-4" />
                             </Button>
@@ -126,6 +136,18 @@ export default function ReelDetailPage() {
               </div>
             )}
           </div>
+          {reel.storyLink && (
+            <div>
+              <Link
+                to={reel.storyLink}
+                target="_blank"
+                className="inline-flex items-center gap-2 text-blue-600 hover:underline font-medium"
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>View Story</span>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </section>
