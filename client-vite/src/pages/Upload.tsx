@@ -4,17 +4,12 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useGlobalContext } from "@/Context/useGlobalContext";
 import { mockAudioResult } from "@/data/mockResult";
+import { mintAndRegisterIP } from "@/lib/utils";
 import { Field, Form, Formik, type FormikProps } from "formik";
 import { CheckCircle, Loader2, Upload, XCircle } from "lucide-react";
 import type React from "react";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import type { mockAudioResult as MockAudioResultType } from "@/data/mockResult";
-import { v2 as cloudinary } from "cloudinary";
-import {
-  mintAndRegisterIP,
-  registerIPandMakeDerivativeFunc,
-} from "@/lib/utils";
 import Connect from "./Connect";
 
 type CheckpointStatus = "idle" | "loading" | "success" | "error";
