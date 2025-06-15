@@ -1,10 +1,7 @@
-import { uploadFileToIPFS } from "@/../story-typescript-tutorial/utils/functions/uploadToIpfs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import type { AudioInfo } from "@/data/mock-data";
-import axios from "axios";
 import { Field, Form, Formik, type FormikProps } from "formik";
 import { CheckCircle, Loader2, Upload, XCircle } from "lucide-react";
 import type React from "react";
@@ -42,7 +39,7 @@ function Checkpoint({ title, status, message, progress }: CheckpointProps) {
         <p className="text-sm text-muted-foreground">
           {message && message.match(/https?:\/\/[^\s]+/) ? (
             <div className="">
-              <span>Reel Uploaded to IPFS: </span>
+              <span>{message.split("http")[0]} </span>
               <Link
                 to={message.match(/https?:\/\/[^\s]+/)![0]}
                 className="text-blue-500 hover:underline"
@@ -66,7 +63,6 @@ function Checkpoint({ title, status, message, progress }: CheckpointProps) {
 
 export default function Upload1() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const formikRef = useRef<FormikProps<{
     reelTitle: string;
@@ -75,39 +71,43 @@ export default function Upload1() {
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState<string>("");
-  const [reelTitle, setReelTitle] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-
-  // Audio Analysis Checkpoints
-  const [extractAudioStatus, setExtractAudioStatus] =
+  const [isDoneWithRegisteringIPStatus, setIsDoneWithRegisteringIPStatus] =
     useState<CheckpointStatus>("idle");
-  const [extractAudioMessage, setExtractAudioMessage] = useState("");
-  const [extractAudioProgress, setExtractAudioProgress] = useState(0);
+
+  const [isDoneWithRegisteringIPMessage, setIsDoneWithRegisteringIPMessage] =
+    useState<string>("");
+
+  const [isDoneWithRegisteringIPProgress, setIsDoneWithRegisteringIPProgress] =
+    useState(0);
+
+  const [
+    isDoneWithRegisteringIPasDerivativeStatus,
+    setIsDoneWithRegisteringIPasDerivativeStatus,
+  ] = useState<CheckpointStatus>("idle");
+
+  const [
+    isDoneWithRegisteringIPasDerivativeMessage,
+    setIsDoneWithRegisteringIPasDerivativeMessage,
+  ] = useState("");
+
+  const [
+    isDoneWithRegisteringIPasDerivativeProgress,
+    setIsDoneWithRegisteringIPasDerivativeProgress,
+  ] = useState(0);
 
   const [findSimilarityStatus, setFindSimilarityStatus] =
     useState<CheckpointStatus>("idle");
   const [findSimilarityMessage, setFindSimilarityMessage] = useState("");
   const [findSimilarityProgress, setFindSimilarityProgress] = useState(0);
-  const [finalAudioResult, setFinalAudioResult] = useState<AudioInfo | null>(
-    null
-  );
 
   // IPFS & Registration Checkpoints
   const [uploadToIpfsStatus, setUploadToIpfsStatus] =
     useState<CheckpointStatus>("idle");
   const [uploadToIpfsMessage, setUploadToIpfsMessage] = useState("");
   const [uploadToIpfsProgress, setUploadToIpfsProgress] = useState(0);
-
-  const [registerIpStatus, setRegisterIpStatus] =
-    useState<CheckpointStatus>("idle");
-  const [registerIpMessage, setRegisterIpMessage] = useState("");
-  const [registerIpProgress, setRegisterIpProgress] = useState(0);
-
-  const [finishingStatus, setFinishingStatus] =
-    useState<CheckpointStatus>("idle");
-  const [finishingMessage, setFinishingMessage] = useState("");
-  const [finishingProgress, setFinishingProgress] = useState(0);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -118,133 +118,31 @@ export default function Upload1() {
       const url = URL.createObjectURL(file);
       setVideoUrl(url);
 
-      resetAnalysisState();
+      // resetAnalysisState();
     }
   };
 
   const resetAnalysisState = () => {
     setIsAnalyzing(false);
     setIsUploading(false);
-    setExtractAudioStatus("idle");
-    setExtractAudioMessage("");
-    setExtractAudioProgress(0);
     setFindSimilarityStatus("idle");
     setFindSimilarityMessage("");
     setFindSimilarityProgress(0);
-    setFinalAudioResult(null);
-    resetUploadState();
+    setIsDoneWithRegisteringIPStatus("idle");
+    setIsDoneWithRegisteringIPMessage("");
+    setIsDoneWithRegisteringIPProgress(0);
+    setIsDoneWithRegisteringIPasDerivativeStatus("idle");
+    setIsDoneWithRegisteringIPasDerivativeMessage("");
+    setIsDoneWithRegisteringIPasDerivativeProgress(0);
+    // resetUploadState();
   };
 
   const resetUploadState = () => {
     setUploadToIpfsStatus("idle");
     setUploadToIpfsMessage("");
     setUploadToIpfsProgress(0);
-    setRegisterIpStatus("idle");
-    setRegisterIpMessage("");
-    setRegisterIpProgress(0);
-    setFinishingStatus("idle");
-    setFinishingMessage("");
-    setFinishingProgress(0);
-  };
-
-  const simulateAudioAnalysis = async (): Promise<AudioInfo> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const similarityScore = Math.floor(Math.random() * 100) + 1; // 1-100%
-
-        let result: AudioInfo;
-        if (similarityScore > 90) {
-          result = { isUnique: true, similarityScore: similarityScore };
-        } else {
-          const similarReels = [
-            { id: "reel-1", title: "Morning Coffee Vibes" },
-            { id: "reel-3", title: "City Lights at Night" },
-          ];
-          const randomSimilarReel =
-            similarReels[Math.floor(Math.random() * similarReels.length)];
-          result = {
-            isUnique: false,
-            similarityScore: similarityScore,
-            similarToReelId: randomSimilarReel.id,
-            similarToReelTitle: randomSimilarReel.title,
-          };
-        }
-        resolve(result);
-      }, 1500);
-    });
-  };
-
-  const simulateCheckpoint = async (
-    setStatus: React.Dispatch<React.SetStateAction<CheckpointStatus>>,
-    setMessage: React.Dispatch<React.SetStateAction<string>>,
-    setProgress: React.Dispatch<React.SetStateAction<number>>,
-    loadingMessage: string,
-    successMessage: string,
-    errorMessage: string,
-    duration: number,
-    successRate = 0.9
-  ): Promise<boolean> => {
-    setStatus("loading");
-    setMessage(loadingMessage);
-    let currentProgress = 0;
-    const interval = setInterval(() => {
-      currentProgress += 10;
-      setProgress(currentProgress);
-      if (currentProgress >= 100) {
-        clearInterval(interval);
-      }
-    }, duration / 10);
-
-    await new Promise((resolve) => setTimeout(resolve, duration));
-    clearInterval(interval);
-
-    const success = Math.random() < successRate;
-    if (success) {
-      setStatus("success");
-      setMessage(successMessage);
-      setProgress(100);
-      return true;
-    } else {
-      setStatus("error");
-      setMessage(errorMessage);
-      setProgress(0);
-      return false;
-    }
-  };
-
-  const handleAnalyze = async () => {
-    if (!formikRef) {
-      return;
-    }
-
-    if (!formikRef.current) {
-      return;
-    }
-    if (
-      (formikRef.current && !formikRef.current.values.reelVideo) ||
-      (formikRef.current && !formikRef.current.values.reelTitle)
-    ) {
-      // alert("Please select a video file and enter a title.");
-      return;
-    }
-
-    resetUploadState();
-
-    setIsAnalyzing(true);
-    try {
-      const hash = await handleIPFSUpload(formikRef.current.values.reelVideo!);
-      if (!hash) {
-        setIsAnalyzing(false);
-        return;
-      }
-      setUploadToIpfsStatus("success");
-      await analyzeAudio(hash);
-    } catch (error) {
-      console.error("Error during analysis:", error);
-      setExtractAudioStatus("error");
-    }
-
-    setIsAnalyzing(false);
+    setSelectedFile(null);
+    setVideoUrl("");
   };
 
   const handleIPFSUpload = async (file: File) => {
@@ -252,7 +150,15 @@ export default function Upload1() {
       setUploadToIpfsStatus("loading");
       setUploadToIpfsMessage("Loading...");
       let currentProgress = 0;
-      const result = await uploadFileToIPFS(file);
+      // const result = await uploadFileToIPFS(file);
+      // Simulate IPFS upload and return a fake hash
+      const result = await new Promise<string>((resolve) => {
+        setTimeout(() => {
+          resolve(
+            "bafybeifixgtek4ooz2qqoam2iitstg3wedsomphuilneh2f7v5wf6xvofq"
+          );
+        }, 1000);
+      });
       const interval = setInterval(() => {
         currentProgress += 10;
         setUploadToIpfsProgress(currentProgress);
@@ -264,7 +170,7 @@ export default function Upload1() {
       clearInterval(interval);
 
       setUploadToIpfsMessage(
-        `Reel uploaded to IPFS successfully https://ipfs.io/ipfs/${result}`
+        `Reel uploaded to IPFS successfully. https://ipfs.io/ipfs/${result}`
       );
       setUploadToIpfsStatus("success");
       setUploadToIpfsProgress(100);
@@ -286,12 +192,29 @@ export default function Upload1() {
       // integrate
 
       // cout<<
-      const result = await axios.post("http://localhost:8000/identify", {
-        videoLink: "https://coral-light-cicada-276.mypinata.cloud/ipfs/" + hash,
-        // videoLink:
-        //   "https://coral-light-cicada-276.mypinata.cloud/ipfs/bafybeifixgtek4ooz2qqoam2iitstg3wedsomphuilneh2f7v5wf6xvofq",
-      });
+      // const result = await axios.post("http://localhost:8000/identify", {
+      //   videoLink: "https://coral-light-cicada-276.mypinata.cloud/ipfs/" + hash,
+      //   // videoLink:
+      //   //   "https://coral-light-cicada-276.mypinata.cloud/ipfs/bafybeifixgtek4ooz2qqoam2iitstg3wedsomphuilneh2f7v5wf6xvofq",
+      // });
 
+      const result = await new Promise<{
+        data: {
+          similarityScore: number;
+          similarToReelTitle?: string;
+          similarToReelId?: string;
+        };
+      }>((resolve) => {
+        setTimeout(() => {
+          resolve({
+            data: {
+              similarityScore: 0.85,
+              similarToReelTitle: "Sample Reel Title",
+              similarToReelId: "12345",
+            },
+          });
+        }, 3000);
+      });
       console.log("Audio analysis result:", result.data);
       // await new Promise((resolve) =>
       //   setTimeout(() => {
@@ -321,16 +244,134 @@ export default function Upload1() {
     }
   };
 
-  const isAudioAnalysisError =
-    extractAudioStatus === "error" || findSimilarityStatus === "error";
-  const isAudioAnalysisComplete =
-    extractAudioStatus === "success" && findSimilarityStatus === "success";
-
   const isSimilarityError =
     uploadToIpfsStatus === "error" || findSimilarityStatus === "error";
 
   const isSimilarityComplete =
     uploadToIpfsStatus === "success" && findSimilarityStatus === "success";
+
+  const handleAnalyze = async () => {
+    if (!formikRef) {
+      return;
+    }
+
+    if (!formikRef.current) {
+      return;
+    }
+    if (
+      (formikRef.current && !formikRef.current.values.reelVideo) ||
+      (formikRef.current && !formikRef.current.values.reelTitle)
+    ) {
+      // alert("Please select a video file and enter a title.");
+      return;
+    }
+
+    resetAnalysisState();
+
+    setIsAnalyzing(true);
+    try {
+      const hash = await handleIPFSUpload(formikRef.current.values.reelVideo!);
+      if (!hash) {
+        setIsAnalyzing(false);
+        return;
+      }
+      await analyzeAudio(hash);
+    } catch (error) {
+      console.error("Error during analysis:", error);
+    }
+
+    setIsAnalyzing(false);
+  };
+
+  const setAsIP = async () => {
+    try {
+      setIsDoneWithRegisteringIPStatus("loading");
+      setIsDoneWithRegisteringIPMessage("Registering IP...");
+
+      let currentProgress = 0;
+
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true);
+        }, 3000);
+      });
+      const interval = setInterval(() => {
+        currentProgress += 10;
+        setIsDoneWithRegisteringIPProgress(currentProgress);
+        if (currentProgress >= 100) {
+          clearInterval(interval);
+        }
+      }, 1000 / 10);
+
+      clearInterval(interval);
+      setIsDoneWithRegisteringIPProgress(100);
+
+      setIsDoneWithRegisteringIPStatus("success");
+      setIsDoneWithRegisteringIPMessage(
+        "IP registered successfully. Story Link https://aeneid.explorer.story.foundation/ipa/0xd6D3AC2058bE199a9Db411fd300E065cc3D18e85"
+      );
+    } catch (error) {
+      setIsDoneWithRegisteringIPStatus("error");
+      setIsDoneWithRegisteringIPMessage("Failed to register IP.");
+      setIsDoneWithRegisteringIPProgress(0);
+      console.error("IP registration error:", error);
+    }
+  };
+
+  const setAsIPandDerivative = async () => {
+    try {
+      setIsDoneWithRegisteringIPasDerivativeStatus("loading");
+      setIsDoneWithRegisteringIPasDerivativeMessage(
+        "Registering as Derivative IP..."
+      );
+
+      let currentProgress = 0;
+      setIsDoneWithRegisteringIPasDerivativeProgress(currentProgress);
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(true);
+        }, 3000);
+      });
+      const interval = setInterval(() => {
+        currentProgress += 10;
+        setIsDoneWithRegisteringIPasDerivativeProgress(currentProgress);
+        if (currentProgress >= 100) {
+          clearInterval(interval);
+        }
+      }, 1000 / 10);
+
+      clearInterval(interval);
+      setIsDoneWithRegisteringIPasDerivativeProgress(100);
+
+      setIsDoneWithRegisteringIPasDerivativeStatus("success");
+      setIsDoneWithRegisteringIPasDerivativeMessage(
+        "Derivative IP registered successfully."
+      );
+    } catch (error) {
+      setIsDoneWithRegisteringIPasDerivativeStatus("error");
+      setIsDoneWithRegisteringIPasDerivativeMessage(
+        "Failed to register as Derivative IP."
+      );
+      setIsDoneWithRegisteringIPasDerivativeProgress(0);
+      console.error("Derivative IP registration error:", error);
+    }
+  };
+
+  const handleIPRegistrations = async () => {
+    try {
+      setIsRegistering(true);
+      await setAsIP();
+      setIsRegistering(false);
+    } catch (error) {
+      console.error("IP registration error:", error);
+    }
+  };
+
+  const isRegistrationError =
+    isDoneWithRegisteringIPStatus === "error" ||
+    isDoneWithRegisteringIPasDerivativeStatus === "error";
+
+  const isRegistrationComplete = isDoneWithRegisteringIPStatus === "success";
 
   return (
     <div
@@ -466,7 +507,7 @@ export default function Upload1() {
                         </div>
                       )}
 
-                      <Button type="submit">Submit</Button>
+                      {/* <Button type="submit">Submit</Button>
                       <Button
                         type="button"
                         onClick={() =>
@@ -489,7 +530,7 @@ export default function Upload1() {
                         type="button"
                       >
                         Upload to IPFS
-                      </Button>
+                      </Button> */}
 
                       <Button
                         onClick={handleAnalyze}
@@ -508,8 +549,7 @@ export default function Upload1() {
 
                     {/* Blockchain Upload Progress */}
                     {(uploadToIpfsStatus !== "idle" ||
-                      findSimilarityStatus !== "idle" ||
-                      finishingStatus !== "idle") && (
+                      findSimilarityStatus !== "idle") && (
                       <div className="space-y-4 border p-3 rounded-lg bg-card text-card-foreground shadow-sm">
                         <h3 className="text-lg font-semibold">
                           Audio Analysis
@@ -571,7 +611,7 @@ export default function Upload1() {
                             )}
 
                             <Button
-                              onClick={() => {}}
+                              onClick={() => handleIPRegistrations()}
                               className="w-full mt-2"
                               size="sm"
                             >
@@ -594,6 +634,61 @@ export default function Upload1() {
                               size="sm"
                             >
                               Reset Upload
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {isDoneWithRegisteringIPStatus !== "idle" && (
+                      <div className="space-y-4 border p-3 rounded-lg bg-card text-card-foreground shadow-sm mt-5">
+                        <h3 className="text-lg font-semibold">
+                          Register as an IP
+                        </h3>
+                        <div className="space-y-3 mb-2">
+                          <Checkpoint
+                            title="1. Register as an IP"
+                            status={isDoneWithRegisteringIPStatus}
+                            message={isDoneWithRegisteringIPMessage}
+                            progress={isDoneWithRegisteringIPProgress}
+                          />
+                          {/* {registerIpStatus === "success" && (
+                            <Checkpoint
+                              title="3. Finishing"
+                              status={finishingStatus}
+                              message={finishingMessage}
+                              progress={finishingProgress}
+                            />
+                          )} */}
+                        </div>
+
+                        {isRegistrationComplete && (
+                          <Button
+                            onClick={() => {
+                              resetAnalysisState();
+                              resetUploadState();
+                            }}
+                            className="w-full mt-2"
+                            size="sm"
+                          >
+                            Upload Another
+                          </Button>
+                        )}
+
+                        {isRegistrationError && (
+                          <div className="mt-4 pt-3 border-t text-center">
+                            <p className="text-red-600 font-semibold text-sm">
+                              Registration failed
+                            </p>
+                            <Button
+                              onClick={() => {
+                                setIsUploading(false);
+                                resetUploadState();
+                              }}
+                              className="w-full mt-2"
+                              size="sm"
+                            >
+                              Reset
                             </Button>
                           </div>
                         )}

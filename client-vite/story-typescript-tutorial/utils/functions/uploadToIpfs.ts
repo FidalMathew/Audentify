@@ -1,4 +1,4 @@
-import { PinataSDK } from 'pinata-web3'
+import { PinataSDK } from 'pinata'
 import fs from 'fs'
 import path from 'path'
 // import 'dotenv/config'
@@ -10,7 +10,7 @@ const pinata = new PinataSDK({
 })
 
 export async function uploadJSONToIPFS(jsonMetadata: any): Promise<string> {
-    const { IpfsHash } = await pinata.upload.json(jsonMetadata)
+    const { cid: IpfsHash } = await pinata.upload.public.json(jsonMetadata)
     return IpfsHash
 }
 
@@ -22,7 +22,7 @@ export async function uploadFileToIPFS(file: File): Promise<string> {
     // const file = new File([blob], fileName, { type: fileType })
     console.log('received')
     console.log('objects file', file)
-    const { IpfsHash } = await pinata.upload.file(file)
+    const { cid: IpfsHash } = await pinata.upload.public.file(file)
     console.log(IpfsHash, 'file uploaded to IPFS')
     return IpfsHash
 }
