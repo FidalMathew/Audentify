@@ -52,8 +52,8 @@ export const mockReels: Reel[] = [
     username: "reelmaster",
     title: "Morning Coffee Vibes",
     videoUrl:
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    thumbnailUrl: "/placeholder.svg?height=300&width=200",
+      "https://lavender-intensive-mouse-745.mypinata.cloud/ipfs/bafybeigjp53wh64gqsro4s5wtxm7ngmeysbdqfck6mnv7kuqowr3wwn7su?pinataGatewayToken=nkOSKCiaIeIjvbxCbIisrfCZLj9O4kVEr3q1UVn5qO9Wx6UP7MegEpXfSzc_8MpH",
+    thumbnailUrl: "",
     audioInfo: {
       isUnique: true,
     },
@@ -67,7 +67,7 @@ export const mockReels: Reel[] = [
     title: "Sunset Beach Walk",
     videoUrl:
       "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-    thumbnailUrl: "/placeholder.svg?height=300&width=200",
+    thumbnailUrl: "",
     audioInfo: {
       isUnique: false,
       similarityScore: 85,
@@ -84,7 +84,7 @@ export const mockReels: Reel[] = [
     title: "City Lights at Night",
     videoUrl:
       "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-    thumbnailUrl: "/placeholder.svg?height=300&width=200",
+    thumbnailUrl: "",
     audioInfo: {
       isUnique: true,
     },
@@ -98,7 +98,7 @@ export const mockReels: Reel[] = [
     title: "Rainy Day Study Session",
     videoUrl:
       "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-    thumbnailUrl: "/placeholder.svg?height=300&width=200",
+    thumbnailUrl: "",
     audioInfo: {
       isUnique: false,
       similarityScore: 92,
@@ -115,7 +115,7 @@ export const mockReels: Reel[] = [
     title: "Cooking Adventures",
     videoUrl:
       "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
-    thumbnailUrl: "/placeholder.svg?height=300&width=200",
+    thumbnailUrl: "",
     audioInfo: {
       isUnique: true,
     },
